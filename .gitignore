@@ -1,0 +1,7 @@
+# Directories
+/build/
+
+# Files
+*.sublime-*
+Ideas.md
+TODO.md
