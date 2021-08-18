@@ -8,6 +8,7 @@ const js13k = {
 
 
 	// Config
+	DEBUG: true,
 	TARGET_FPS: 60,
 
 

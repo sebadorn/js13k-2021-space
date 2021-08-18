@@ -16,15 +16,23 @@ js13k.Renderer = {
 	cnvDanger: null,
 	ctxDanger: null,
 
+	centerX: 0,
+	centerY: 0,
+
 	last: 0,
-	level: null,
+
+	// No need to set these attributes right now.
+	// Leaving them as comment to know they (will) exist.
+	//
+	// level: null,
+	// sprite: null,
 
 
 	/**
 	 * Clear the canvas.
 	 */
 	clear() {
-		this.ctx.fillStyle = '#202020';
+		this.ctx.fillStyle = '#171717';
 		this.ctx.fillRect( 0, 0, this.cnv.width, this.cnv.height );
 
 		this.ctxDanger.clearRect( 0, 0, this.cnvDanger.width, this.cnvDanger.height );
@@ -45,18 +53,6 @@ js13k.Renderer = {
 	 */
 	drawPause() {
 		// TODO:
-
-		// this.ctx.fillStyle = '#111';
-		// this.ctx.fillRect( 0, 0, this.cnv.width, this.cnv.height );
-
-		// this.ctx.fillStyle = '#a2a2a2';
-		// this.ctx.font = 'bold 128px Arial, sans-serif';
-		// this.ctx.textAlign = 'center';
-		// this.ctx.fillText( 'PAUSED', this.centerX, this.centerY );
-
-		// this.ctx.fillStyle = '#808080';
-		// this.ctx.font = '48px Arial, sans-serif';
-		// this.ctx.fillText( 'Press [Esc] to continue.', this.centerX, this.centerY + 80 );
 	},
 
 
@@ -74,7 +70,7 @@ js13k.Renderer = {
 		this.ctxDanger.imageSmoothingEnabled = false;
 
 		this.registerEvents();
-		this.loadImages( cb );
+		this.loadSprite( cb );
 	},
 
 
@@ -82,26 +78,13 @@ js13k.Renderer = {
 	 * Load images for use on the canvas.
 	 * @param {function} cb
 	 */
-	loadImages( cb ) {
-		let loaded = 0;
-
-		// TODO: load images
-
-		// const img_m = new Image();
-		// img_m.onload = () => {
-		// 	this.sprite_m = img_m;
-		// 	( ++loaded === 2 ) && cb();
-		// };
-		// img_m.src = 'm.gif';
-
-		// const img_s = new Image();
-		// img_s.onload = () => {
-		// 	this.sprite_s = img_s;
-		// 	( ++loaded === 2 ) && cb();
-		// };
-		// img_s.src = 's.gif';
-
-		cb();
+	loadSprite( cb ) {
+		const img = new Image();
+		img.onload = () => {
+			this.sprite = img;
+			cb();
+		};
+		img.src = 's.gif';
 	},
 
 
@@ -181,12 +164,10 @@ js13k.Renderer = {
 
 	/**
 	 * Resize the canvas.
-	 * @param {?number} w
-	 * @param {?number} h
 	 */
-	resize( w = Infinity, h = Infinity ) {
-		this.cnv.height = Math.min( window.innerHeight, h );
-		this.cnv.width = Math.min( window.innerWidth, w );
+	resize() {
+		this.cnv.height = window.innerHeight;
+		this.cnv.width = window.innerWidth;
 
 		this.cnvDanger.height = this.cnv.height;
 		this.cnvDanger.width = this.cnv.width;
@@ -217,14 +198,12 @@ js13k.Renderer = {
 	/**
 	 * Render an object to an offset canvas.
 	 * @param  {js13k.LevelObject} o
-	 * @param  {?number}           h
-	 * @param  {?number}           w
 	 * @return {HTMLCanvasElement}
 	 */
-	toOffscreenCanvas( o, h, w ) {
+	toOffscreenCanvas( o ) {
 		const canvas = document.createElement( 'canvas' );
-		canvas.width = w || o.w;
-		canvas.height = h || o.h;
+		canvas.width = o.w;
+		canvas.height = o.h;
 
 		const ctx = canvas.getContext( '2d' );
 		ctx.imageSmoothingEnabled = false;

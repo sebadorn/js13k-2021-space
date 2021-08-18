@@ -12,7 +12,8 @@ class Level_Main extends js13k.Level {
 	 */
 	constructor() {
 		super();
-		// TODO:
+
+		this.player = new js13k.Player( this, 400, 400 );
 	}
 
 
@@ -22,7 +23,6 @@ class Level_Main extends js13k.Level {
 	 */
 	draw( ctx ) {
 		super.draw( ctx );
-		// TODO:
 	}
 
 
@@ -31,7 +31,7 @@ class Level_Main extends js13k.Level {
 	 * @param {number} dt
 	 */
 	update( dt ) {
-		// TODO:
+		super.update( dt );
 	}
 
 

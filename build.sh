@@ -9,11 +9,14 @@ if [ -d 'build' ]; then
 	rm -r 'build'
 fi
 
+mkdir -p 'build/dangers'
 mkdir -p 'build/levels'
 
 cp 'dev/index-dev.html' 'build/'
 cp 'dev/'*.gif 'build/'
 cp 'dev/js/'*.js 'build/'
+cp 'dev/js/dangers/'*.js 'build/dangers/'
+cp 'dev/js/levels/'*.js 'build/levels/'
 
 cd 'build' > '/dev/null'
 
@@ -33,17 +36,18 @@ terser \
 	'Player.js' \
 	'Renderer.js' \
 	'UI.js' \
+	'dangers/DangerEye.js' \
 	'levels/Intro.js' \
 	'levels/Main.js' \
 	--ecma 10 --warn \
 	--compress --toplevel \
-	--mangle \
+	--mangle reserved=['js13k'] \
 	-o 'i.js'
 
 sed -i'' 's/^"use strict";//' 'i.js'
 
 rm 'index-dev.html'
-rm -rf 'levels'
+rm -rf 'dangers' 'levels'
 find -type f -name '*.js' -not -name 'i.js' -delete
 
 # ZIP up everything needed.
