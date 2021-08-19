@@ -52,7 +52,11 @@ js13k.Renderer = {
 	 * Draw the pause screen.
 	 */
 	drawPause() {
-		// TODO:
+		this.ctx.fillStyle = '#FFF';
+		this.ctx.font = 'normal 64px monospace';
+		this.ctx.textAlign = 'left';
+		this.ctx.textBaseline = 'top';
+		this.ctx.fillText( 'PAUSED', 20, 20 );
 	},
 
 
@@ -113,6 +117,15 @@ js13k.Renderer = {
 			else {
 				this.level && this.level.update( dt );
 				this.draw( dt );
+			}
+
+			// Draw FPS info
+			if( js13k.DEBUG ) {
+				this.ctx.fillStyle = '#FFF';
+				this.ctx.font = 'normal 16px monospace';
+				this.ctx.textAlign = 'right';
+				this.ctx.textBaseline = 'top';
+				this.ctx.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', this.cnv.width - 20, 20 );
 			}
 		}
 

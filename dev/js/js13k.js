@@ -17,6 +17,7 @@ const js13k = {
 	 */
 	init() {
 		js13k.Input.init();
+		js13k.Audio.init();
 
 		js13k.Renderer.init( () => {
 			js13k.Renderer.level = new js13k.Level.Main();
