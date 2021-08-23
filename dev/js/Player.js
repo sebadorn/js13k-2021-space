@@ -17,8 +17,8 @@ class Player extends js13k.LevelObject {
 		super( level, { x, y, w: 32, h: 32 } );
 
 		this.died = 0;
-		this.frame = 0;
-		this.speed = 6;
+		this.f = 0; // frame timer
+		this.sp = 6; // movement speed
 	}
 
 
@@ -27,8 +27,10 @@ class Player extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
+		const offsetX = this.f < 10 ? 0 : 32;
+
 		ctx.drawImage(
-			js13k.Renderer.sprite, 0, 0, 32, 32,
+			js13k.Renderer.sprites.player.cnv, offsetX, 0, 32, 32,
 			~~this.x, ~~this.y, this.w, this.h
 		);
 
@@ -57,8 +59,9 @@ class Player extends js13k.LevelObject {
 	 * @param {number} dir.y
 	 */
 	update( dt, dir ) {
-		this.x += dt * dir.x * this.speed;
-		this.y += dt * dir.y * this.speed;
+		this.f = ( this.f + dt ) % 20;
+		this.x += dt * dir.x * this.sp;
+		this.y += dt * dir.y * this.sp;
 	}
 
 

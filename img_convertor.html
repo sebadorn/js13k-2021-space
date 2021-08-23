@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Image to Array Convertor</title>
+	<meta name="author" content="Sebastian Dorn (@sebadorn)" />
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			background-color: #202027;
+			color: #FFFFFF;
+			padding: 60px;
+		}
+		body, button, input, textarea {
+			font-family: monospace;
+			font-size: 16px;
+		}
+		button, input {
+			background-color: darkorange;
+			border: 0;
+			border-radius: 6px;
+			color: #000000;
+			cursor: pointer;
+			line-height: 16px;
+		}
+		button {
+			margin-left: 10px;
+			padding: 5px 10px;
+		}
+		textarea {
+			background-color: #303037;
+			border: 0;
+			color: #FFFFFF;
+			display block;
+			margin-top: 40px;
+			outline: none;
+			padding: 10px;
+			resize: vertical;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+<input type="file" accept="image/*" id="image-file" />
+<button id="convert">convert</button>
+<textarea rows="20" id="out"></textarea>
+<script>
+(function() {
+	const inputFile = document.getElementById( 'image-file' );
+	const btnConvert = document.getElementById( 'convert' );
+	const out = document.getElementById( 'out' );
+	const sizeLimit = 8192;
+
+	function isCloseTo( a, b ) {
+		return Math.abs( a - b ) < 2;
+	}
+
+	btnConvert.addEventListener( 'click', ev => {
+		if( inputFile.files.length === 0 ) {
+			console.warn( 'No file selected.' );
+			return;
+		}
+
+		const file = inputFile.files[0];
+
+		if( file.size > sizeLimit ) {
+			window.alert( `File is too big. Size limit is ${ sizeLimit } Bytes.` );
+			return;
+		}
+
+		const fr = new FileReader();
+
+		fr.addEventListener( 'load', ev => {
+			const img = new Image();
+
+			img.addEventListener( 'load', () => {
+				const canvas = document.createElement( 'canvas' );
+				canvas.width = img.width;
+				canvas.height = img.height;
+
+				const ctx = canvas.getContext( '2d', { alpha: true } );
+				ctx.imageSmoothingEnabled = false;
+				ctx.drawImage( img, 0, 0 );
+
+				const imageData = ctx.getImageData( 0, 0, img.width, img.height );
+				const index = {
+					'0,0,0,0': '',
+					'255,255,255,255': 0
+				};
+				let counter = 0;
+				const map = [];
+
+				for( let i = 0; i < imageData.data.length; i += 4 ) {
+					let r = imageData.data[i + 0];
+					let g = imageData.data[i + 1];
+					let b = imageData.data[i + 2];
+					let a = imageData.data[i + 3];
+
+					let key = r + ',' + g + ',' + b + ',' + a;
+
+					if( a === 0 ) {
+						key = '0,0,0,0';
+					}
+
+					if( typeof index[key] !== 'undefined' ) {
+						map.push( index[key] );
+					}
+					else {
+						index[key] = ++counter;
+						map.push( counter );
+					}
+				}
+
+				out.value = map.join( ',' );
+				out.value += '\n\n';
+
+				for( const key in index ) {
+					out.value += index[key] + ': ' + key + '\n';
+				}
+
+				out.value = out.value.substring( 0, out.value.length - 1 );
+			} );
+
+			img.src = ev.target.result;
+		} );
+
+		fr.readAsDataURL( file );
+	} );
+})();
+</script>
+</body>
+</html>

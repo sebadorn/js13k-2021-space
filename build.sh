@@ -13,7 +13,7 @@ mkdir -p 'build/dangers'
 mkdir -p 'build/levels'
 
 cp 'dev/index-dev.html' 'build/'
-cp 'dev/'*.gif 'build/'
+# cp 'dev/'*.gif 'build/'
 cp 'dev/js/'*.js 'build/'
 cp 'dev/js/dangers/'*.js 'build/dangers/'
 cp 'dev/js/levels/'*.js 'build/levels/'
