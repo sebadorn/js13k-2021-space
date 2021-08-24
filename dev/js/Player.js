@@ -30,7 +30,7 @@ class Player extends js13k.LevelObject {
 		const offsetX = this.f < 10 ? 0 : 32;
 
 		ctx.drawImage(
-			js13k.Renderer.sprites.player.cnv, offsetX, 0, 32, 32,
+			js13k.Renderer.sprites.player, offsetX, 0, 32, 32,
 			~~this.x, ~~this.y, this.w, this.h
 		);
 
