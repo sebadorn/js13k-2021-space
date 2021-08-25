@@ -3,7 +3,7 @@
 
 {
 
-class Level_Main extends js13k.Level {
+class Level_Outro extends js13k.Level {
 
 
 	/**
@@ -12,12 +12,7 @@ class Level_Main extends js13k.Level {
 	 */
 	constructor() {
 		super();
-
-		this.player = new js13k.Player( this, 400, 400 );
-
-		this.dangers.push(
-			new js13k.LevelObject.DangerEye( this, 100, 100 )
-		);
+		// TODO:
 	}
 
 
@@ -27,6 +22,7 @@ class Level_Main extends js13k.Level {
 	 */
 	draw( ctx ) {
 		super.draw( ctx );
+		// TODO:
 	}
 
 
@@ -35,13 +31,13 @@ class Level_Main extends js13k.Level {
 	 * @param {number} dt
 	 */
 	update( dt ) {
-		super.update( dt );
+		// TODO:
 	}
 
 
 }
 
 
-js13k.Level.Main = Level_Main;
+js13k.Level.Outro = Level_Outro;
 
 }

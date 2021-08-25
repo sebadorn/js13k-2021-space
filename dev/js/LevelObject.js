@@ -32,8 +32,6 @@ class LevelObject {
 
 		this.x = data.x || 0;
 		this.y = data.y || 0;
-		this.xe = this.x + this.w; // x end
-		this.ye = this.y + this.h; // y end
 
 		this.nextPos = {
 			x: this.x,

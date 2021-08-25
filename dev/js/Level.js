@@ -19,6 +19,33 @@ class Level {
 
 
 	/**
+	 * Check if player is hit.
+	 * @return {boolean}
+	 */
+	checkHit() {
+		// TODO: First check hitboxes, then imageData of LevelObject canvas ctx.
+		// Checking the big canvas is veeery slow.
+		// Might as well remove the cnvDanger and ctxDanger.
+
+		const hitbox = this.player.getHitbox();
+		const imageData = js13k.Renderer.ctxDanger.getImageData( ...hitbox );
+
+		for( let i = 0; i < imageData.data.length; i += 4 ) {
+			const r = imageData.data[i + 0];
+			const g = imageData.data[i + 1];
+			const b = imageData.data[i + 2];
+			const a = imageData.data[i + 3];
+
+			if( r >= 254 && g >= 254 && b >= 254 && a >= 254 ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
 	 *
 	 */
 	draw() {
@@ -59,6 +86,7 @@ class Level {
 		if( this.player ) {
 			const dir = js13k.Input.getDirections();
 			this.player.update( dt, dir );
+			this.player.hit = this.checkHit();
 		}
 	}
 

@@ -61,6 +61,24 @@ js13k.Renderer = {
 
 
 	/**
+	 * Get an offset canvas and its context.
+	 * @param  {number} w
+	 * @param  {number} h
+	 * @return {array} [HTMLCanvasElement, CanvasRenderingContext2D]
+	 */
+	getOffscreenCanvas( w, h ) {
+		const canvas = document.createElement( 'canvas' );
+		canvas.width = w;
+		canvas.height = h;
+
+		const ctx = canvas.getContext( '2d' );
+		ctx.imageSmoothingEnabled = false;
+
+		return [canvas, ctx];
+	},
+
+
+	/**
 	 * Initialize the renderer.
 	 * @param {function} cb
 	 */

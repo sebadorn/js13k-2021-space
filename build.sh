@@ -41,6 +41,7 @@ terser \
 	'dangers/DangerEye.js' \
 	'levels/Intro.js' \
 	'levels/Main.js' \
+	'levels/Outro.js' \
 	--ecma 10 --warn \
 	--compress --toplevel \
 	--mangle reserved=['js13k'] \

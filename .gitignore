@@ -2,6 +2,7 @@
 /build/
 
 # Files
+*.mp4
 *.sublime-*
 Ideas.md
 TODO.md
