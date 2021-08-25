@@ -58,6 +58,39 @@
 		return Math.abs( a - b ) < 2;
 	}
 
+	function compress( str ) {
+		let c = '';
+
+		for( let i = 0; i < str.length; i++ ) {
+			let count = 1;
+			let char = str[i];
+
+			for( let j = i + 1; j < str.length; j++ ) {
+				let nextChar = str[j];
+
+				if( char !== nextChar ) {
+					break;
+				}
+
+				count++;
+			}
+
+			if( count === 1 ) {
+				c += char;
+			}
+			else if( count === 2 ) {
+				c += char + char;
+				i++;
+			}
+			else {
+				c += String( count ) + char;
+				i += count - 1;
+			}
+		}
+
+		return c;
+	}
+
 	btnConvert.addEventListener( 'click', ev => {
 		if( inputFile.files.length === 0 ) {
 			console.warn( 'No file selected.' );
@@ -87,9 +120,10 @@
 
 				const imageData = ctx.getImageData( 0, 0, img.width, img.height );
 				const index = {
-					'0,0,0,0': '',
-					'255,255,255,255': 0
+					'0,0,0,0': ' ',
+					'255,255,255,255': 'a'
 				};
+				const letters = 'abcdefghijklmnopqrstuvwxyz';
 				let counter = 0;
 				const map = [];
 
@@ -109,12 +143,16 @@
 						map.push( index[key] );
 					}
 					else {
-						index[key] = ++counter;
-						map.push( counter );
+						counter++;
+						index[key] = letters[counter];
+						map.push( letters[counter] );
 					}
 				}
 
-				out.value = map.join( ',' );
+				let imgASCII = map.join( '' );
+				imgASCII = compress( imgASCII );
+
+				out.value = imgASCII;
 				out.value += '\n\n';
 
 				for( const key in index ) {
