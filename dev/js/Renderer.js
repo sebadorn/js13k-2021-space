@@ -85,39 +85,6 @@ js13k.Renderer = {
 	loadSprites( cb ) {
 		const keys = Object.keys( js13k.Assets.sprites );
 
-		const uncompress = data => {
-			let str = '';
-
-			for( let i = 0; i < data.length; i++ ) {
-				const char = data[i];
-
-				if( char === ' ' || isNaN( char ) ) {
-					str += char;
-					continue;
-				}
-
-				let number = char;
-				let repeat = '';
-
-				for( let j = i + 1; j < data.length; j++ ) {
-					const nextChar = data[j];
-
-					if( nextChar === ' ' || isNaN( nextChar ) ) {
-						repeat = nextChar;
-						break;
-					}
-					else {
-						number += String( nextChar );
-					}
-				}
-
-				str += repeat.repeat( number );
-				i += String( number ).length;
-			}
-
-			return str;
-		};
-
 		const render = i => {
 			if( i == keys.length ) {
 				cb();
@@ -134,10 +101,8 @@ js13k.Renderer = {
 			const ctx = cnv.getContext( '2d', { alpha: true } );
 			const imageData = ctx.createImageData( cnv.width, cnv.height );
 
-			const dataStr = uncompress( sprite.data );
-
-			for( let j = 0; j < dataStr.length; j++ ) {
-				const d = dataStr[j];
+			for( let j = 0; j < sprite.data.length; j++ ) {
+				const d = sprite.data[j];
 				const color = sprite.c[d];
 
 				let r = 0;
