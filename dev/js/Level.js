@@ -23,12 +23,21 @@ class Level {
 	 * @return {boolean}
 	 */
 	checkHit() {
-		// TODO: First check hitboxes, then imageData of LevelObject canvas ctx.
-		// Checking the big canvas is veeery slow.
-		// Might as well remove the cnvDanger and ctxDanger.
-
 		const hitbox = this.player.getHitbox();
-		const imageData = js13k.Renderer.ctxDanger.getImageData( ...hitbox );
+
+		// Pixel-perfect collision detection with the player.
+		//
+		// Draw the canvas with all dangers onto a small canvas
+		// the size of the player hitbox. Only draw the area
+		// the player hitbox is currently at. Then read the pixels
+		// of that small canvas and check for certain colors.
+		this.ctxHit.clearRect( 0, 0, hitbox[2], hitbox[3] );
+		this.ctxHit.drawImage(
+			js13k.Renderer.cnvDanger, ...hitbox,
+			0, 0, hitbox[2], hitbox[3]
+		);
+
+		const imageData = this.ctxHit.getImageData( 0, 0, hitbox[2], hitbox[3] );
 
 		for( let i = 0; i < imageData.data.length; i += 4 ) {
 			const r = imageData.data[i + 0];

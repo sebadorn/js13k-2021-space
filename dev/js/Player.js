@@ -50,7 +50,7 @@ class Player extends js13k.LevelObject {
 	 * @return {number[]} global x, global y, width, height
 	 */
 	getHitbox() {
-		return [this.x + 8, this.y + 12, 16, 16];
+		return [this.x + 9, this.y + 15, 12, 12];
 	}
 
 

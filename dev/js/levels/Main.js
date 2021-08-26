@@ -18,6 +18,8 @@ class Level_Main extends js13k.Level {
 		this.dangers.push(
 			new js13k.LevelObject.DangerEye( this, 100, 100 )
 		);
+
+		[this.cnvHit, this.ctxHit] = js13k.Renderer.getOffscreenCanvas( this.player.w, this.player.h );
 	}
 
 
