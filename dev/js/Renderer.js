@@ -7,34 +7,32 @@
 js13k.Renderer = {
 
 
-	// Canvas for background, player, UI.
-	cnv: null,
-	ctx: null,
-
-	// Canvas for everything that could harm the player.
-	// Separate from the main canvas to do some pixel-based collision detection.
-	cnvDanger: null,
-	ctxDanger: null,
-
-	centerX: 0,
-	centerY: 0,
-
-	last: 0,
-	sprites: {},
-
 	// No need to set these attributes right now.
 	// Leaving them as comment to know they (will) exist.
+	// --------------------------------------------------
 	//
+	// centerX: 0,
+	// centerY: 0,
+	// last: 0,
 	// level: null,
+	//
+	// // Canvas for background, player, UI.
+	// cnv: null,
+	// ctx: null,
+	//
+	// // Canvas for everything that could harm the player.
+	// // Separate from the main canvas to do some pixel-based collision detection.
+	// cnvDanger: null,
+	// ctxDanger: null,
+
+	sprites: {},
 
 
 	/**
 	 * Clear the canvas.
 	 */
 	clear() {
-		this.ctx.fillStyle = '#171717';
-		this.ctx.fillRect( 0, 0, this.cnv.width, this.cnv.height );
-
+		this.ctx.clearRect( 0, 0, this.cnv.width, this.cnv.height );
 		this.ctxDanger.clearRect( 0, 0, this.cnvDanger.width, this.cnvDanger.height );
 	},
 
@@ -71,7 +69,7 @@ js13k.Renderer = {
 		canvas.width = w;
 		canvas.height = h;
 
-		const ctx = canvas.getContext( '2d' );
+		const ctx = canvas.getContext( '2d', { alpha: true } );
 		ctx.imageSmoothingEnabled = false;
 
 		return [canvas, ctx];
@@ -84,7 +82,7 @@ js13k.Renderer = {
 	 */
 	init( cb ) {
 		this.cnv = document.getElementById( 'c' );
-		this.ctx = this.cnv.getContext( '2d', { alpha: false } );
+		this.ctx = this.cnv.getContext( '2d', { alpha: true } );
 		this.ctx.imageSmoothingEnabled = false;
 
 		this.cnvDanger = document.getElementById( 'd' );

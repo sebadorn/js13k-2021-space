@@ -58,10 +58,7 @@ class Level {
 	 *
 	 */
 	draw() {
-		const width = js13k.Renderer.cnv.width;
-		const height = js13k.Renderer.cnv.height;
-
-		this.drawBackground( height, width );
+		this.drawBackground();
 
 		this.effects.forEach( effect => effect.draw( js13k.Renderer.ctx ) );
 		this.dangers.forEach( danger => danger.draw( js13k.Renderer.ctxDanger ) );
@@ -74,10 +71,8 @@ class Level {
 
 	/**
 	 *
-	 * @param {number} cnvHeight
-	 * @param {number} cnvWidth
 	 */
-	drawBackground( cnvHeight, cnvWidth ) {
+	drawBackground() {
 		// TODO:
 	}
 
@@ -95,7 +90,7 @@ class Level {
 		if( this.player ) {
 			const dir = js13k.Input.getDirections();
 			this.player.update( dt, dir );
-			this.player.hit = this.checkHit();
+			this.player.isHit = this.checkHit();
 		}
 	}
 

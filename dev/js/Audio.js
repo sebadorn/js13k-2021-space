@@ -11,6 +11,7 @@ js13k.Audio = {
 
 	// No need to set these attributes right now.
 	// Leaving them as comment to know they (will) exist.
+	// --------------------------------------------------
 	//
 	// ctx: null,
 	// gain: null,
@@ -128,6 +129,24 @@ js13k.Audio = {
 		// Default volume is too loud. Go with something
 		// really low, it will still be loud enough.
 		this.volume( 0.2 );
+
+		// Cache all sounds as AudioBuffers.
+		for( const name in this.SOUND ) {
+			const frameCount = this.ctx.sampleRate * 2;
+			const buffer = this.ctx.createBuffer( 2, frameCount, this.ctx.sampleRate );
+
+			// Two channels for stereo.
+			const channelData0 = buffer.getChannelData( 0 );
+			const channelData1 = buffer.getChannelData( 1 );
+
+			for( let i = 0; i < frameCount; i++ ) {
+				if( this.SOUND[name]( i, channelData0, channelData1 ) ) {
+					break;
+				}
+			}
+
+			this._cache[name] = buffer;
+		}
 	},
 
 
@@ -135,28 +154,10 @@ js13k.Audio = {
 	 *
 	 * @param  {function} audioFunction
 	 * @param  {?number}  duration
-	 * @return {AudioBufferSourceNode}
+	 * @return {?AudioBufferSourceNode}
 	 */
 	play( audioFunction, duration ) {
-		let buffer = this._cache[audioFunction.name];
-
-		if( !buffer ) {
-			const frameCount = this.ctx.sampleRate * 2;
-			buffer = this.ctx.createBuffer( 2, frameCount, this.ctx.sampleRate );
-
-			// Two channels for stereo.
-			const channelData0 = buffer.getChannelData( 0 );
-			const channelData1 = buffer.getChannelData( 1 );
-
-			for( let i = 0; i < frameCount; i++ ) {
-				if( audioFunction( i, channelData0, channelData1 ) ) {
-					break;
-				}
-			}
-
-			this._cache[audioFunction.name] = buffer;
-		}
-
+		const buffer = this._cache[audioFunction.name];
 		const source = this.ctx.createBufferSource();
 		source.buffer = buffer;
 		source.connect( this.gain );

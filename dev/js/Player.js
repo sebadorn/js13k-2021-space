@@ -17,7 +17,7 @@ class Player extends js13k.LevelObject {
 		super( level, { x, y, w: 32, h: 32 } );
 
 		this.f = 0; // frame timer
-		this.hit = false;
+		this.isHit = false;
 		this.sp = 6; // movement speed
 
 		if( !Player.sprite ) {
@@ -34,12 +34,28 @@ class Player extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
+		// Light circle
+		const hitbox = this.getHitbox();
+		const centerX = Math.round( hitbox[0] + hitbox[2] * 0.5 );
+		const centerY = Math.round( hitbox[1] + hitbox[3] * 0.5 );
+
+		ctx.fillStyle = 'rgba(255,255,196,0.01)';
+
+		ctx.beginPath();
+		ctx.ellipse( centerX, centerY, 120, 120, 0, 0, 360 );
+		ctx.fill();
+
+		ctx.beginPath();
+		ctx.ellipse( centerX, centerY, 55, 55, 0, 0, 360 );
+		ctx.fill();
+
+		// Sprite
 		const frame = this.f < 10 ? 0 : 1;
 		ctx.drawImage( Player.sprite[frame], this.x, this.y );
 
 		if( js13k.DEBUG ) {
 			ctx.lineWidth = 2;
-			ctx.strokeStyle = this.hit ? 'blue' : 'red';
+			ctx.strokeStyle = this.isHit ? 'blue' : 'red';
 			ctx.strokeRect( ...this.getHitbox() );
 		}
 	}
