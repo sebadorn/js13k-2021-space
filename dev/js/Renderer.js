@@ -178,9 +178,8 @@ js13k.Renderer = {
 			if( js13k.DEBUG ) {
 				this.ctx.fillStyle = '#FFF';
 				this.ctx.font = 'normal 16px monospace';
-				this.ctx.textAlign = 'right';
-				this.ctx.textBaseline = 'top';
-				this.ctx.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', this.cnv.width - 20, 20 );
+				this.ctx.textBaseline = 'bottom';
+				this.ctx.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 20, this.cnv.height - 20 );
 			}
 		}
 

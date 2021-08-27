@@ -16,8 +16,6 @@ class DangerEye extends js13k.LevelObject {
 	constructor( level, x, y ) {
 		super( level, { x, y, w: 61, h: 127 } );
 
-		this.f = 0; // frame timer
-
 		if( !DangerEye.sprite ) {
 			DangerEye.sprite = [
 				DangerEye.preRender( this.w, this.h, 0 ),
@@ -32,7 +30,7 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
-		const frame = this.f < 10 ? 0 : 1;
+		const frame = this.level.timer % 20 < 10 ? 0 : 1;
 		ctx.drawImage( DangerEye.sprite[frame], this.x, this.y );
 	}
 
@@ -45,7 +43,7 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {number} dir.y
 	 */
 	update( dt, dir ) {
-		this.f = ( this.f + dt ) % 20;
+		// TODO:
 	}
 
 

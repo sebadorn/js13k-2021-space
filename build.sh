@@ -39,6 +39,7 @@ terser \
 	'Renderer.js' \
 	'UI.js' \
 	'dangers/DangerEye.js' \
+	'dangers/SmallBite.js' \
 	'levels/Intro.js' \
 	'levels/Main.js' \
 	'levels/Outro.js' \

@@ -16,7 +16,6 @@ class Player extends js13k.LevelObject {
 	constructor( level, x, y ) {
 		super( level, { x, y, w: 32, h: 32 } );
 
-		this.f = 0; // frame timer
 		this.isHit = false;
 		this.sp = 6; // movement speed
 
@@ -39,18 +38,19 @@ class Player extends js13k.LevelObject {
 		const centerX = Math.round( hitbox[0] + hitbox[2] * 0.5 );
 		const centerY = Math.round( hitbox[1] + hitbox[3] * 0.5 );
 
-		ctx.fillStyle = 'rgba(255,255,196,0.01)';
+		let [alpha, r1, r2] = this.flicker ? [0.007, 110, 45] : [0.01, 120, 55];
+		ctx.fillStyle = `rgba(255,255,196,${alpha})`;
 
 		ctx.beginPath();
-		ctx.ellipse( centerX, centerY, 120, 120, 0, 0, 360 );
+		ctx.ellipse( centerX, centerY, r1, r1, 0, 0, 360 );
 		ctx.fill();
 
 		ctx.beginPath();
-		ctx.ellipse( centerX, centerY, 55, 55, 0, 0, 360 );
+		ctx.ellipse( centerX, centerY, r2, r2, 0, 0, 360 );
 		ctx.fill();
 
 		// Sprite
-		const frame = this.f < 10 ? 0 : 1;
+		const frame = this.level.timer % 20 < 10 ? 0 : 1;
 		ctx.drawImage( Player.sprite[frame], this.x, this.y );
 
 		if( js13k.DEBUG ) {
@@ -78,9 +78,18 @@ class Player extends js13k.LevelObject {
 	 * @param {number} dir.y
 	 */
 	update( dt, dir ) {
-		this.f = ( this.f + dt ) % 20;
 		this.x += Math.round( dt * dir.x * this.sp );
 		this.y += Math.round( dt * dir.y * this.sp );
+
+		if( this.flicker > 0 ) {
+			this.flicker -= dt;
+		}
+		else if( this.flicker < 0 ) {
+			this.flicker = 0;
+		}
+		else if( Math.random() < 0.008 ) {
+			this.flicker = dt * 16;
+		}
 	}
 
 
