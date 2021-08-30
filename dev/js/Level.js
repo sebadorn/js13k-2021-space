@@ -14,6 +14,7 @@ class Level {
 		this.effects = [];
 		this.dangers = [];
 
+		this.border = 0;
 		this.timer = 0;
 	}
 
@@ -59,6 +60,7 @@ class Level {
 	 */
 	draw() {
 		this.drawBackground();
+		this.drawBorder( js13k.Renderer.ctxDanger );
 
 		this.effects.forEach( effect => effect.draw( js13k.Renderer.ctx ) );
 		this.dangers.forEach( danger => danger.draw( js13k.Renderer.ctxDanger ) );
@@ -79,6 +81,20 @@ class Level {
 
 	/**
 	 *
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	drawBorder( ctx ) {
+		const lw = 40 + this.border;
+		const offset = lw * 0.5;
+
+		ctx.lineWidth = lw;
+		ctx.strokeStyle = '#474747';
+		ctx.strokeRect( offset, offset, js13k.Renderer.cnv.width - lw, js13k.Renderer.cnv.height - lw );
+	}
+
+
+	/**
+	 *
 	 * @param {number} dt
 	 */
 	update( dt ) {
@@ -88,9 +104,23 @@ class Level {
 		this.dangers.forEach( danger => danger.update( dt ) );
 
 		if( this.player ) {
+			// Border
+			this.border += dt * 0.01;
+
+			// Player
 			const dir = js13k.Input.getDirections();
 			this.player.update( dt, dir );
-			this.player.isHit = this.checkHit();
+
+			if( this.player.hit <= this.timer && this.checkHit() ) {
+				this.player.hp--;
+
+				if( this.player.hp <= 0 ) {
+					// TODO: game over
+				}
+
+				// How long the "has been hit" state stays.
+				this.player.hit = this.timer + dt * 240;
+			}
 		}
 	}
 

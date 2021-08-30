@@ -16,7 +16,8 @@ class Player extends js13k.LevelObject {
 	constructor( level, x, y ) {
 		super( level, { x, y, w: 32, h: 32 } );
 
-		this.isHit = false;
+		this.hit = 0;
+		this.hp = 4; // hit points
 		this.sp = 6; // movement speed
 
 		if( !Player.sprite ) {
@@ -38,7 +39,7 @@ class Player extends js13k.LevelObject {
 		const centerX = Math.round( hitbox[0] + hitbox[2] * 0.5 );
 		const centerY = Math.round( hitbox[1] + hitbox[3] * 0.5 );
 
-		let [alpha, r1, r2] = this.flicker ? [0.007, 110, 45] : [0.01, 120, 55];
+		const [alpha, r1, r2] = this.flicker ? [0.007, 110, 45] : [0.01, 120, 55];
 		ctx.fillStyle = `rgba(255,255,196,${alpha})`;
 
 		ctx.beginPath();
@@ -49,13 +50,19 @@ class Player extends js13k.LevelObject {
 		ctx.ellipse( centerX, centerY, r2, r2, 0, 0, 360 );
 		ctx.fill();
 
-		// Sprite
-		const frame = this.level.timer % 20 < 10 ? 0 : 1;
-		ctx.drawImage( Player.sprite[frame], this.x, this.y );
+		// Flicker if hit
+		if(
+			this.hit - this.level.timer <= 0 ||
+			this.level.timer % 30 < 15
+		) {
+			// Sprite
+			const frame = this.level.timer % 20 < 10 ? 0 : 1;
+			ctx.drawImage( Player.sprite[frame], this.x, this.y );
+		}
 
 		if( js13k.DEBUG ) {
 			ctx.lineWidth = 2;
-			ctx.strokeStyle = this.isHit ? 'blue' : 'red';
+			ctx.strokeStyle = this.hit > this.level.timer ? 'blue' : 'red';
 			ctx.strokeRect( ...this.getHitbox() );
 		}
 	}

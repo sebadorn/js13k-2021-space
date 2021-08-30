@@ -48,6 +48,16 @@ const js13k = {
 		overlapY = ( overlapY < 0 ) ? 0 : overlapY;
 
 		return ( overlapX * overlapY > Number.EPSILON );
+	},
+
+
+	/**
+	 * Get the length of a 2D vector.
+	 * @param  {number[]} vec - 2D vector.
+	 * @return {number}
+	 */
+	vecLength( vec ) {
+		return Math.sqrt( vec[0] * vec[0] + vec[1] * vec[1] );
 	}
 
 

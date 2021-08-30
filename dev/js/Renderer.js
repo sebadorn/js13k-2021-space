@@ -13,10 +13,11 @@ js13k.Renderer = {
 	//
 	// centerX: 0,
 	// centerY: 0,
+	// cont: null,
 	// last: 0,
 	// level: null,
 	//
-	// // Canvas for background, player, UI.
+	// // Canvas for background, player
 	// cnv: null,
 	// ctx: null,
 	//
@@ -24,6 +25,9 @@ js13k.Renderer = {
 	// // Separate from the main canvas to do some pixel-based collision detection.
 	// cnvDanger: null,
 	// ctxDanger: null,
+	//
+	// cnvUI: null,
+	// ctxUI: null,
 
 	sprites: {},
 
@@ -34,6 +38,7 @@ js13k.Renderer = {
 	clear() {
 		this.ctx.clearRect( 0, 0, this.cnv.width, this.cnv.height );
 		this.ctxDanger.clearRect( 0, 0, this.cnvDanger.width, this.cnvDanger.height );
+		this.ctxUI.clearRect( 0, 0, this.cnvUI.width, this.cnvUI.height );
 	},
 
 
@@ -50,11 +55,14 @@ js13k.Renderer = {
 	 * Draw the pause screen.
 	 */
 	drawPause() {
-		this.ctx.fillStyle = '#FFF';
-		this.ctx.font = 'normal 64px monospace';
-		this.ctx.textAlign = 'left';
-		this.ctx.textBaseline = 'top';
-		this.ctx.fillText( 'PAUSED', 20, 20 );
+		this.ctxUI.fillStyle = 'rgba(0,0,0,0.4)';
+		this.ctxUI.fillRect( 0, 0, this.cnvUI.width, this.cnvUI.height );
+
+		this.ctxUI.fillStyle = '#FFF';
+		this.ctxUI.font = 'normal 56px monospace';
+		this.ctxUI.textAlign = 'center';
+		this.ctxUI.textBaseline = 'top';
+		this.ctxUI.fillText( 'PAUSED', this.centerX, 20 );
 	},
 
 
@@ -81,6 +89,8 @@ js13k.Renderer = {
 	 * @param {function} cb
 	 */
 	init( cb ) {
+		this.cont = document.getElementById( 'm');
+
 		this.cnv = document.getElementById( 'c' );
 		this.ctx = this.cnv.getContext( '2d', { alpha: true } );
 		this.ctx.imageSmoothingEnabled = false;
@@ -88,6 +98,10 @@ js13k.Renderer = {
 		this.cnvDanger = document.getElementById( 'd' );
 		this.ctxDanger = this.cnvDanger.getContext( '2d', { alpha: true } );
 		this.ctxDanger.imageSmoothingEnabled = false;
+
+		this.cnvUI = document.getElementById( 'ui' );
+		this.ctxUI = this.cnvUI.getContext( '2d', { alpha: true } );
+		this.ctxUI.imageSmoothingEnabled = false;
 
 		this.registerEvents();
 		this.loadSprites( cb );
@@ -160,7 +174,6 @@ js13k.Renderer = {
 			// Target speed of 60 FPS (=> 1000 / 60 ~= 16.667 [ms]).
 			const dt = timeElapsed / ( 1000 / js13k.TARGET_FPS );
 
-			this.ctx.imageSmoothingEnabled = false;
 			this.ctx.lineWidth = 1;
 			this.ctx.textBaseline = 'alphabetic';
 			this.ctx.setTransform( 1, 0, 0, 1, 0, 0 );
@@ -176,10 +189,14 @@ js13k.Renderer = {
 
 			// Draw FPS info
 			if( js13k.DEBUG ) {
-				this.ctx.fillStyle = '#FFF';
-				this.ctx.font = 'normal 16px monospace';
-				this.ctx.textBaseline = 'bottom';
-				this.ctx.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 20, this.cnv.height - 20 );
+				this.ctxUI.fillStyle = '#000';
+				this.ctxUI.fillRect( 10, this.cnv.height - 45, 90, 29 );
+
+				this.ctxUI.fillStyle = '#FFF';
+				this.ctxUI.font = 'normal 16px monospace';
+				this.ctxUI.textAlign = 'left';
+				this.ctxUI.textBaseline = 'bottom';
+				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 20, this.cnv.height - 20 );
 			}
 		}
 
@@ -233,14 +250,42 @@ js13k.Renderer = {
 	 * Resize the canvas.
 	 */
 	resize() {
-		this.cnv.height = window.innerHeight;
-		this.cnv.width = window.innerWidth;
+		// Keep an 16:9 aspect ratio.
+		// 9 / 16 = 0.5625
+		let w = window.innerWidth;
+		let h = window.innerHeight;
 
-		this.cnvDanger.height = this.cnv.height;
-		this.cnvDanger.width = this.cnv.width;
+		// Should be normal case: Window has more width than height.
+		if( w > h ) {
+			h = Math.round( w * 0.5625 );
 
-		this.centerX = Math.round( this.cnv.width / 2 );
-		this.centerY = Math.round( this.cnv.height / 2 );
+			// Window height is less than required height.
+			// Reduce width to fit.
+			if( h > window.innerHeight ) {
+				h = window.innerHeight;
+				w = Math.round( h / 0.5625 );
+			}
+		}
+		else {
+			w = Math.round( h / 0.5625 );
+
+			if( w > window.innerWidth ) {
+				w = window.innerWidth;
+				h = Math.round( w * 0.5625 );
+			}
+		}
+
+		this.cnv.height = h;
+		this.cnv.width = w;
+
+		this.cnvDanger.height = h;
+		this.cnvDanger.width = w;
+
+		this.cnvUI.height = h;
+		this.cnvUI.width = w;
+
+		this.centerX = Math.round( w / 2 );
+		this.centerY = Math.round( h / 2 );
 
 		if( this.isPaused ) {
 			clearTimeout( this._timeoutDrawPause );

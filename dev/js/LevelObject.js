@@ -29,6 +29,24 @@ class LevelObject {
 	}
 
 
+	/**
+	 *
+	 * @param  {boolean} [round = false]
+	 * @return {object}
+	 */
+	getCenter( round ) {
+		let x = this.x + this.w * 0.5;
+		let y = this.y + this.h * 0.5;
+
+		if( round ) {
+			x = Math.round( x );
+			y = Math.round( y );
+		}
+
+		return { x, y };
+	}
+
+
 }
 
 

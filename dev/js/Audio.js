@@ -170,6 +170,25 @@ js13k.Audio = {
 
 	/**
 	 *
+	 * @param  {number}   freq
+	 * @param  {number}   duration
+	 * @param  {?string} [type = "sine"] - "sine", "square", "sawtooth", "triangle"
+	 * @return {OscillatorNode}
+	 */
+	playFreq( freq, duration, type = 'sine' ) {
+		const osc = this.ctx.createOscillator();
+		osc.type = type;
+		osc.frequency.setValueAtTime( freq, this.ctx.currentTime );
+		osc.connect( this.gain );
+		osc.start();
+		osc.stop( this.ctx.currenTime + duration );
+
+		return osc;
+	},
+
+
+	/**
+	 *
 	 * @param {number} value - Value between [0.0, 1.0].
 	 */
 	volume( value ) {
