@@ -46,11 +46,13 @@
 <body>
 <input type="file" accept="image/*" id="image-file" />
 <button id="convert">convert</button>
+<button id="binary">to binary file</button>
 <textarea rows="20" id="out"></textarea>
 <script>
 (function() {
 	const inputFile = document.getElementById( 'image-file' );
 	const btnConvert = document.getElementById( 'convert' );
+	const btnBinary = document.getElementById( 'binary' );
 	const out = document.getElementById( 'out' );
 	const sizeLimit = 8192;
 
@@ -90,6 +92,7 @@
 
 		return c;
 	}
+
 
 	btnConvert.addEventListener( 'click', ev => {
 		if( inputFile.files.length === 0 ) {
@@ -160,6 +163,71 @@
 				}
 
 				out.value = out.value.substring( 0, out.value.length - 1 );
+			} );
+
+			img.src = ev.target.result;
+		} );
+
+		fr.readAsDataURL( file );
+	} );
+
+
+	btnBinary.addEventListener( 'click', ev => {
+		if( inputFile.files.length === 0 ) {
+			console.warn( 'No file selected.' );
+			return;
+		}
+
+		const file = inputFile.files[0];
+
+		if( file.size > sizeLimit ) {
+			window.alert( `File is too big. Size limit is ${ sizeLimit } Bytes.` );
+			return;
+		}
+
+		const fr = new FileReader();
+
+		fr.addEventListener( 'load', ev => {
+			const img = new Image();
+
+			img.addEventListener( 'load', () => {
+				const canvas = document.createElement( 'canvas' );
+				canvas.width = img.width;
+				canvas.height = img.height;
+
+				const ctx = canvas.getContext( '2d', { alpha: true } );
+				ctx.imageSmoothingEnabled = false;
+				ctx.drawImage( img, 0, 0 );
+
+				const imageData = ctx.getImageData( 0, 0, img.width, img.height );
+				const bytesArray = new Uint8Array( Math.ceil( imageData.data.length / 4 / 8 ) );
+
+				// Every element in the Uint8Array is 1 byte = 8 bits long.
+				// Every pixel is now stored as 1 bit with:
+				// 0 - transparent
+				// 1 - colored (without specifying the color)
+
+				for( let i = 0; i < imageData.data.length; i += 4 ) {
+					const r = imageData.data[i + 0];
+					const g = imageData.data[i + 1];
+					const b = imageData.data[i + 2];
+					const a = imageData.data[i + 3];
+					const isColor = a > 127;
+					const pxIndex = i / 4;
+					const index = Math.floor( pxIndex / 8 );
+
+					if( isColor ) {
+						const bit = Math.pow( 2, pxIndex % 8 );
+						bytesArray[index] = bytesArray[index] | bit;
+					}
+				}
+
+				const blob = new Blob( [bytesArray], { type: 'application/octet-stream' } );
+				const a = document.createElement( 'a' );
+				a.download = 'img.bin';
+				a.href = URL.createObjectURL( blob );
+				a.click();
+				URL.revokeObjectURL( a.href );
 			} );
 
 			img.src = ev.target.result;

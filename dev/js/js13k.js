@@ -20,7 +20,7 @@ const js13k = {
 		js13k.Audio.init();
 
 		js13k.Renderer.init( () => {
-			js13k.Renderer.level = new js13k.Level.Main();
+			js13k.Renderer.level = new js13k.Level.Intro();
 			js13k.Renderer.mainLoop();
 		} );
 	},

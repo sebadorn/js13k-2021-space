@@ -3,7 +3,7 @@
 
 {
 
-class Level_Main extends js13k.Level {
+class Level_Eyes extends js13k.Level {
 
 
 	/**
@@ -26,10 +26,9 @@ class Level_Main extends js13k.Level {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2d} ctx
 	 */
-	draw( ctx ) {
-		super.draw( ctx );
+	draw() {
+		super.draw();
 	}
 
 
@@ -45,6 +44,6 @@ class Level_Main extends js13k.Level {
 }
 
 
-js13k.Level.Main = Level_Main;
+js13k.Level.Eyes = Level_Eyes;
 
 }

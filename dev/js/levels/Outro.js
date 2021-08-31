@@ -7,7 +7,7 @@ class Level_Outro extends js13k.Level {
 
 
 	/**
-	 *
+	 * Outro.
 	 * @constructor
 	 */
 	constructor() {
@@ -18,10 +18,9 @@ class Level_Outro extends js13k.Level {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2d} ctx
 	 */
-	draw( ctx ) {
-		super.draw( ctx );
+	draw() {
+		super.draw();
 		// TODO:
 	}
 

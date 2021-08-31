@@ -88,7 +88,7 @@ class Level {
 		const offset = lw * 0.5;
 
 		ctx.lineWidth = lw;
-		ctx.strokeStyle = '#474747';
+		ctx.strokeStyle = '#97387F';
 		ctx.strokeRect( offset, offset, js13k.Renderer.cnv.width - lw, js13k.Renderer.cnv.height - lw );
 	}
 

@@ -41,7 +41,8 @@ terser \
 	'dangers/DangerEye.js' \
 	'dangers/SmallBite.js' \
 	'levels/Intro.js' \
-	'levels/Main.js' \
+	'levels/Eyes.js' \
+	'levels/Teeth.js' \
 	'levels/Outro.js' \
 	--ecma 10 --warn \
 	--compress --toplevel \
@@ -54,6 +55,10 @@ rm 'index-dev.html'
 rm -rf 'dangers' 'levels'
 find -type f -name '*.js' -not -name 'i.js' -delete
 
+JS_SIZE=$( stat --printf="%s" 'i.js' )
+HTML_SIZE=$( stat --printf="%s" 'index.html' )
+UNZIPPED_SIZE=$(( $JS_SIZE + $HTML_SIZE ))
+
 # ZIP up everything needed.
 # 9: highest compression level
 zip -9 -q -r "$OUT_FILE" ./*
@@ -64,15 +69,20 @@ BEFORE_ADVZIP_SIZE=$( stat --printf="%s" "$OUT_FILE" )
 # advzip can be installed from the "advancecomp" package.
 # 4: best compression
 # i: additional iterations
-advzip -q -z -4 -i 100 "$OUT_FILE"
+advzip -q -z -4 -i 200 "$OUT_FILE"
 # Test integrity of file.
 # STDOUT(1) is just the file name.
 # STDERR(2) shows actual errors, if there are some.
 advzip -t -p "$OUT_FILE" 1> /dev/null
 
 CURRENT_SIZE=$( stat --printf="%s" "$OUT_FILE" )
-printf '  - Max size:                 %5d bytes\n' "$MAX_SIZE"
+FREE_SPACE=$(( $MAX_SIZE - $CURRENT_SIZE ))
+printf '\n'
+printf '  Max size:                   %5d bytes\n' "$MAX_SIZE"
+printf '  ---------------------------------------\n'
+printf '  - File sizes (unzipped):    %5d bytes\n' "$UNZIPPED_SIZE"
 printf '  - ZIP size (before advzip): %5d bytes\n' "$BEFORE_ADVZIP_SIZE"
 printf '  - ZIP size (after advzip):  %5d bytes\n' "$CURRENT_SIZE"
-
-echo '  - Done.'
+printf '  ---------------------------------------\n'
+printf '  Space left:                 %5d bytes\n' "$FREE_SPACE"
+printf '\n'
