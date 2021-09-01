@@ -40,24 +40,28 @@ const js13k = {
 	 * @param  {number} b.y - Position on Y axis.
 	 * @return {boolean}
 	 */
-	overlap( a, b ) {
-		let overlapX = Math.min( a.x + a.w, b.x + b.w ) - Math.max( a.x, b.x );
-		overlapX = ( overlapX < 0 ) ? 0 : overlapX;
+	// overlap( a, b ) {
+	// 	let overlapX = Math.min( a.x + a.w, b.x + b.w ) - Math.max( a.x, b.x );
+	// 	overlapX = ( overlapX < 0 ) ? 0 : overlapX;
 
-		let overlapY = Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y );
-		overlapY = ( overlapY < 0 ) ? 0 : overlapY;
+	// 	let overlapY = Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y );
+	// 	overlapY = ( overlapY < 0 ) ? 0 : overlapY;
 
-		return ( overlapX * overlapY > Number.EPSILON );
-	},
+	// 	return ( overlapX * overlapY > Number.EPSILON );
+	// },
 
 
 	/**
-	 * Get the length of a 2D vector.
-	 * @param  {number[]} vec - 2D vector.
-	 * @return {number}
+	 * Normalize a 2D vector.
+	 * @param  {number[]} vec
+	 * @return {number[]}
 	 */
-	vecLength( vec ) {
-		return Math.sqrt( vec[0] * vec[0] + vec[1] * vec[1] );
+	normalize( vec ) {
+		const length = Math.sqrt( vec[0] * vec[0] + vec[1] * vec[1] );
+		vec[0] /= length || 1;
+		vec[1] /= length || 1;
+
+		return vec;
 	}
 
 

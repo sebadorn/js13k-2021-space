@@ -11,10 +11,10 @@ class Level {
 	 * @constructor
 	 */
 	constructor() {
-		this.effects = [];
-		this.dangers = [];
-
+		this._selected = 0;
 		this.border = 0;
+		this.dangers = [];
+		this.isGameOver = false;
 		this.timer = 0;
 	}
 
@@ -59,10 +59,14 @@ class Level {
 	 *
 	 */
 	draw() {
-		this.drawBackground();
+		if( this.isGameOver ) {
+			this.drawGameOver( js13k.Renderer.ctx );
+			return;
+		}
+
+		this.drawBackground( js13k.Renderer.ctx );
 		this.drawBorder( js13k.Renderer.ctxDanger );
 
-		this.effects.forEach( effect => effect.draw( js13k.Renderer.ctx ) );
 		this.dangers.forEach( danger => danger.draw( js13k.Renderer.ctxDanger ) );
 
 		if( this.player ) {
@@ -74,9 +78,7 @@ class Level {
 	/**
 	 *
 	 */
-	drawBackground() {
-		// TODO:
-	}
+	drawBackground() {}
 
 
 	/**
@@ -84,7 +86,7 @@ class Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawBorder( ctx ) {
-		const lw = 40 + this.border;
+		const lw = Math.round( 10 + this.border );
 		const offset = lw * 0.5;
 
 		ctx.lineWidth = lw;
@@ -95,31 +97,82 @@ class Level {
 
 	/**
 	 *
+	 * @param {CanvasRenderingContext2D}
+	 */
+	drawGameOver( ctx ) {
+		ctx.fillStyle = '#FFF';
+		ctx.textAlign = 'center';
+		ctx.fillText( 'DEVOURED BY FEAR', js13k.Renderer.centerX, js13k.Renderer.centerY );
+
+		this.drawOption( ctx, 0, 'try again', 60 );
+	}
+
+
+	/**
+	 *
+	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {number}                   index
+	 * @param {string}                   text
+	 * @param {number}                   offsetY
+	 */
+	drawOption( ctx, index, text, offsetY ) {
+		const centerX = js13k.Renderer.centerX;
+		const centerY = js13k.Renderer.centerY;
+		const width = 180;
+		const height = 40;
+
+		const x = Math.round( centerX - width * 0.5 ) + 0.5;
+		const y = Math.round( centerY + offsetY ) + 0.5;
+
+		ctx.fillStyle = 'rgba(0,0,0,0.3)';
+		ctx.fillRect( x, y, width, height );
+
+		ctx.strokeStyle = index === this._selected ? 'orange' : '#FFF';
+		ctx.lineWidth = 3;
+		ctx.strokeRect( x, y, width, height );
+
+		ctx.font = 'normal 20px monospace';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'top';
+		ctx.fillStyle = '#FFF';
+		ctx.fillText( text, centerX, y + 12 );
+	}
+
+
+	/**
+	 *
 	 * @param {number} dt
 	 */
 	update( dt ) {
 		this.timer += dt;
 
-		this.effects.forEach( effect => effect.update( dt ) );
-		this.dangers.forEach( danger => danger.update( dt ) );
-
-		if( this.player ) {
-			// Border
-			this.border += dt * 0.01;
-
-			// Player
-			const dir = js13k.Input.getDirections();
-			this.player.update( dt, dir );
-
-			if( this.player.hit <= this.timer && this.checkHit() ) {
-				this.player.hp--;
-
-				if( this.player.hp <= 0 ) {
-					// TODO: game over
+		if( this.isGameOver ) {
+			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+				if( this._selected === 0 ) {
+					js13k.Renderer.reloadLevel();
 				}
+			}
+		}
+		else {
+			this.dangers.forEach( danger => danger.update( dt ) );
 
-				// How long the "has been hit" state stays.
-				this.player.hit = this.timer + dt * 240;
+			if( this.player ) {
+				this.border += dt * 0.03;
+
+				const dir = js13k.Input.getDirections();
+				this.player.update( dt, dir );
+
+				if( this.player.hit <= this.timer && this.checkHit() ) {
+					this.player.hp--;
+
+					if( this.player.hp > 0 ) {
+						// How long the "has been hit" state stays.
+						this.player.hit = this.timer + dt * 240;
+					}
+					else {
+						this.isGameOver = true;
+					}
+				}
 			}
 		}
 	}

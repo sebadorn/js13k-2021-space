@@ -18,6 +18,7 @@ class DangerEye extends js13k.LevelObject {
 
 		this.angle = 0;
 		this.sp = 1;
+		this.started = false;
 
 		if( !DangerEye.sprite ) {
 			DangerEye.sprite = [
@@ -33,6 +34,10 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
+		if( !this.started ) {
+			return;
+		}
+
 		const frame = this.level.timer % 20 < 10 ? 0 : 1;
 		const center = this.getCenter( true );
 
@@ -49,20 +54,17 @@ class DangerEye extends js13k.LevelObject {
 	/**
 	 *
 	 * @param {number} dt
-	 * @param {object} dir
-	 * @param {number} dir.x
-	 * @param {number} dir.y
 	 */
-	update( dt, dir ) {
+	update( dt ) {
+		if( !this.started ) {
+			return;
+		}
+
 		// Track player.
-
-		const hb = this.level.player.getHitbox();
-		const playerCenterX = hb[0] + hb[2] * 0.5;
-		const playerCenterY = hb[1] + hb[3] * 0.5;
-
+		const playerCenter = this.level.player.getCenter();
 		const center = this.getCenter();
-		const diffX = center.x - playerCenterX;
-		const diffY = center.y - playerCenterY;
+		const diffX = center.x - playerCenter.x;
+		const diffY = center.y - playerCenter.y;
 
 		let moveX = 0;
 		let moveY = 0;
@@ -92,13 +94,10 @@ class DangerEye extends js13k.LevelObject {
 		// Math.atan2( vec1[1], vec1[0] );
 		// -> -1.5707963267948966
 
-		const vec2 = [
-			playerCenterX - center.x,
-			playerCenterY - center.y
-		];
-		const vec2Len = js13k.vecLength( vec2 );
-		vec2[0] /= vec2Len;
-		vec2[1] /= vec2Len;
+		const vec2 = js13k.normalize([
+			playerCenter.x - center.x,
+			playerCenter.y - center.y
+		]);
 
 		this.angle = Math.atan2( vec2[1], vec2[0] ) + 1.5707963267948966;
 	}

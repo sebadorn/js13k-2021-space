@@ -17,7 +17,7 @@ class Player extends js13k.LevelObject {
 		super( level, { x, y, w: 32, h: 32 } );
 
 		this.hit = 0;
-		this.hp = 4; // hit points
+		this.hp = 3; // hit points
 		this.sp = 6; // movement speed
 
 		if( !Player.sprite ) {
@@ -60,11 +60,31 @@ class Player extends js13k.LevelObject {
 			ctx.drawImage( Player.sprite[frame], this.x, this.y );
 		}
 
-		if( js13k.DEBUG ) {
-			ctx.lineWidth = 2;
-			ctx.strokeStyle = this.hit > this.level.timer ? 'blue' : 'red';
-			ctx.strokeRect( ...this.getHitbox() );
+		// Draw hitbox.
+		// if( js13k.DEBUG ) {
+		// 	ctx.lineWidth = 2;
+		// 	ctx.strokeStyle = this.hit > this.level.timer ? 'blue' : '#FFF';
+		// 	ctx.strokeRect( ...this.getHitbox() );
+		// }
+	}
+
+
+	/**
+	 *
+	 * @param  {boolean} [round = false]
+	 * @return {object}
+	 */
+	getCenter( round ) {
+		const hb = this.getHitbox();
+		let x = hb[0] + hb[2] * 0.5;
+		let y = hb[1] + hb[3] * 0.5;
+
+		if( round ) {
+			x = Math.round( x );
+			y = Math.round( y );
 		}
+
+		return { x, y };
 	}
 
 

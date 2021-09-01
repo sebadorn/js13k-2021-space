@@ -13,12 +13,25 @@ class Level_Eyes extends js13k.Level {
 	constructor() {
 		super();
 
-		this.player = new js13k.Player( this, 400, 400 );
+		const width = js13k.Renderer.cnv.width;
+		const height = js13k.Renderer.cnv.height;
+
+		this.player = new js13k.Player( this );
+		this.player.x = ( width - this.player.w ) / 2;
+		this.player.y = ( height - this.player.h ) / 2;
 
 		this.dangers.push(
-			new js13k.LevelObject.DangerEye( this, 100, 100 ),
-			new js13k.LevelObject.SmallBite( this, 400, 100 )
+			new js13k.LevelObject.DangerEye( this, 0, 0 ),
+			new js13k.LevelObject.DangerEye( this, width, 0 ),
+			new js13k.LevelObject.DangerEye( this, width, height ),
+			new js13k.LevelObject.DangerEye( this, 0, height )
 		);
+
+		const de = this.dangers[0];
+		this.dangers[0].x -= de.w;
+		this.dangers[3].x -= de.w;
+		this.dangers[2].y -= de.h;
+		this.dangers[3].y -= de.h;
 
 		[this.cnvHit, this.ctxHit] = js13k.Renderer.getOffscreenCanvas( this.player.w, this.player.h );
 	}
@@ -26,9 +39,34 @@ class Level_Eyes extends js13k.Level {
 
 	/**
 	 *
+	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	draw() {
-		super.draw();
+	drawBackground( ctx ) {
+		const centerX = js13k.Renderer.centerX;
+		const centerY = js13k.Renderer.centerY;
+
+		let x = centerX - 90;
+		let y = centerY - 90;
+		ctx.setTransform( 2, 0, 0, 2, -x, -y );
+		ctx.drawImage( js13k.Renderer.sprites.bg_eye_ball, x, y - 10 );
+
+		x = centerX - 15;
+		y = centerY - 50;
+		ctx.setTransform( 2, 0, 0, 2, -x, -y );
+
+		// Have the eye look in the direction of the player.
+		const playerCenter = this.player.getCenter();
+
+		const diff = js13k.normalize([
+			centerX - playerCenter.x,
+			centerY - playerCenter.y
+		]);
+
+		x += Math.sin( -diff[0] ) * 14;
+		y += Math.sin( -diff[1] ) * 14 - 10;
+		ctx.drawImage( js13k.Renderer.sprites.bg_eye_iris, x, y );
+
+		ctx.setTransform( 1, 0, 0, 1, 0, 0 );
 	}
 
 
@@ -38,6 +76,11 @@ class Level_Eyes extends js13k.Level {
 	 */
 	update( dt ) {
 		super.update( dt );
+
+		if( !this.started && this.timer > dt * 120 ) {
+			this.dangers.forEach( danger => danger.started = true );
+			this.started = true;
+		}
 	}
 
 

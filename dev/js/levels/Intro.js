@@ -13,47 +13,7 @@ class Level_Intro extends js13k.Level {
 	constructor() {
 		super();
 
-		this._selected = 0;
-
 		this.player = new js13k.Player( this );
-	}
-
-
-	/**
-	 *
-	 * @private
-	 * @param {CanvasRenderingContext2D} ctx
-	 * @param {number}                   index
-	 * @param {string}                   text
-	 * @param {number}                   offsetY
-	 */
-	_drawOption( ctx, index, text, offsetY ) {
-		const centerX = js13k.Renderer.centerX;
-		const centerY = js13k.Renderer.centerY;
-		const width = 180;
-		const height = 40;
-
-		const x = Math.round( centerX - width * 0.5 ) + 0.5;
-		const y = Math.round( centerY + offsetY ) + 0.5;
-
-		ctx.fillStyle = 'rgba(0,0,0,0.3)';
-		ctx.fillRect( x, y, width, height );
-
-		if( index === this._selected ) {
-			ctx.strokeStyle = 'orange';
-		}
-		else {
-			ctx.strokeStyle = '#FFF';
-		}
-
-		ctx.lineWidth = 3;
-		ctx.strokeRect( x, y, width, height );
-
-		ctx.font = 'normal 20px monospace';
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'top';
-		ctx.fillStyle = '#FFF';
-		ctx.fillText( text, centerX, y + 12 );
 	}
 
 
@@ -62,7 +22,6 @@ class Level_Intro extends js13k.Level {
 	 * @private
 	 */
 	_loadLevel() {
-		// TODO:
 		if( this._selected === 0 ) {
 			js13k.Renderer.level = new js13k.Level.Eyes();
 		}
@@ -80,8 +39,8 @@ class Level_Intro extends js13k.Level {
 
 		this.player.draw( ctx );
 
-		this._drawOption( ctx, 0, 'being watched', 60 );
-		this._drawOption( ctx, 1, 'being eaten', 130 );
+		this.drawOption( ctx, 0, 'being watched', 60 );
+		this.drawOption( ctx, 1, 'being eaten', 130 );
 	}
 
 

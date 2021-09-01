@@ -174,6 +174,10 @@ js13k.Renderer = {
 			// Target speed of 60 FPS (=> 1000 / 60 ~= 16.667 [ms]).
 			const dt = timeElapsed / ( 1000 / js13k.TARGET_FPS );
 
+			this.ctx.imageSmoothingEnabled = false;
+			this.ctxDanger.imageSmoothingEnabled = false;
+			this.ctxUI.imageSmoothingEnabled = false;
+
 			this.ctx.lineWidth = 1;
 			this.ctx.textBaseline = 'alphabetic';
 			this.ctx.setTransform( 1, 0, 0, 1, 0, 0 );
@@ -247,33 +251,19 @@ js13k.Renderer = {
 
 
 	/**
+	 *
+	 */
+	reloadLevel() {
+		this.level = new this.level.constructor();
+	},
+
+
+	/**
 	 * Resize the canvas.
 	 */
 	resize() {
-		// Keep an 16:9 aspect ratio.
-		// 9 / 16 = 0.5625
-		let w = window.innerWidth;
-		let h = window.innerHeight;
-
-		// Should be normal case: Window has more width than height.
-		if( w > h ) {
-			h = Math.round( w * 0.5625 );
-
-			// Window height is less than required height.
-			// Reduce width to fit.
-			if( h > window.innerHeight ) {
-				h = window.innerHeight;
-				w = Math.round( h / 0.5625 );
-			}
-		}
-		else {
-			w = Math.round( h / 0.5625 );
-
-			if( w > window.innerWidth ) {
-				w = window.innerWidth;
-				h = Math.round( w * 0.5625 );
-			}
-		}
+		const w = Math.min( window.innerWidth, window.innerHeight );
+		const h = w;
 
 		this.cnv.height = h;
 		this.cnv.width = w;
