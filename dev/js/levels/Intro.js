@@ -36,11 +36,24 @@ class Level_Intro extends js13k.Level {
 	 */
 	draw() {
 		const ctx = js13k.Renderer.ctx;
+		const centerX = js13k.Renderer.centerX;
+
+		ctx.font = 'bold 36px "Courier New", monospace';
+		ctx.textAlign = 'center';
+
+		ctx.fillStyle = '#444';
+		ctx.fillText( 'CHOOSE YOUR DEMISE!', centerX, 195 );
+		ctx.fillText( 'CHOOSE YOUR DEMISE!', centerX, 205 );
+		ctx.fillText( 'WHICH FEAR SHALL DEVOUR YOU?', centerX, 135 );
+		ctx.fillText( 'WHICH FEAR SHALL DEVOUR YOU?', centerX, 145 );
+
+		ctx.fillStyle = '#ddd';
+		ctx.fillText( 'CHOOSE YOUR DEMISE!', centerX, 200 );
+		ctx.fillText( 'WHICH FEAR SHALL DEVOUR YOU?', centerX, 140 );
 
 		this.player.draw( ctx );
-
-		this.drawOption( ctx, 0, 'being watched', 60 );
-		this.drawOption( ctx, 1, 'being eaten', 130 );
+		this.drawOption( ctx, 0, 'being watched', 100 );
+		this.drawOption( ctx, 1, 'being eaten', 170 );
 	}
 
 

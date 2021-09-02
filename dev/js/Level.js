@@ -131,7 +131,7 @@ class Level {
 		ctx.lineWidth = 3;
 		ctx.strokeRect( x, y, width, height );
 
-		ctx.font = 'normal 20px monospace';
+		ctx.font = 'bold 20px "Courier New", monospace';
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'top';
 		ctx.fillStyle = '#FFF';
