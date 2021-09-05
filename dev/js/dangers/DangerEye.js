@@ -12,13 +12,15 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {js13k.Level} level
 	 * @param {number}      x
 	 * @param {number}      y
+	 * @param {number}     [targetX = 0]
+	 * @param {number}     [targetY = 0]
 	 */
-	constructor( level, x, y ) {
-		super( level, { x, y, w: 61, h: 127 } );
+	constructor( level, x, y, targetX = 0, targetY = 0 ) {
+		super( level, { x, y, w: DangerEye.W, h: DangerEye.H } );
 
-		this.sp = 6;
-		this.targetX = x;
-		this.targetY = y;
+		this.sp = 1.25;
+		this.targetX = targetX;
+		this.targetY = targetY;
 
 		if( !DangerEye.sprite ) {
 			DangerEye.sprite = [
@@ -34,7 +36,7 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
-		if( !this.started || this.ended ) {
+		if( this._start > this.level.timer || this.ended ) {
 			return;
 		}
 
@@ -50,12 +52,12 @@ class DangerEye extends js13k.LevelObject {
 
 		// Laser attack.
 		if( this.attackStarted ) {
-			const progress = Math.min( ( this.level.timer - this.started ) / 140, 1 );
+			const progress = Math.min( ( this.level.timer - this._start ) / 140, 1 );
 			const alpha = progress * progress;
 			const x = this.x + this.w / 2;
 
 			ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-			ctx.lineWidth = Math.round( progress * this.w );
+			ctx.lineWidth = Math.round( progress * 30 );
 
 			ctx.beginPath();
 			ctx.moveTo( x, this.y );
@@ -72,16 +74,16 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {number} dt
 	 */
 	update( dt ) {
-		if( !this.started ) {
+		if( this._start > this.level.timer ) {
 			return;
 		}
 
 		if( this.attackStarted ) {
-			this.ended = ( this.level.timer - this.started ) > 180;
+			this.ended = ( this.level.timer - this._start ) > 180;
 			return;
 		}
 
-		this.attackStarted = ( this.level.timer - this.started ) > 30;
+		this.attackStarted = ( this.level.timer - this._start ) > 30;
 
 		// Move to target position.
 		const center = this.getCenter();
@@ -130,6 +132,10 @@ class DangerEye extends js13k.LevelObject {
 
 
 }
+
+
+DangerEye.W = 61;
+DangerEye.H = 127;
 
 
 /**

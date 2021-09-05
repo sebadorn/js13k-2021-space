@@ -48,7 +48,7 @@ class Level {
 			const b = imageData.data[i + 2];
 			const a = imageData.data[i + 3];
 
-			if( r >= 254 && g >= 254 && b >= 254 && a >= 254 ) {
+			if( r >= 254 && g >= 254 && b >= 254 && a >= 127 ) {
 				return true;
 			}
 		}
@@ -73,6 +73,7 @@ class Level {
 
 		if( this.player ) {
 			this.player.draw( js13k.Renderer.ctx );
+			this.drawHP( js13k.Renderer.ctxUI );
 		}
 	}
 
@@ -107,6 +108,22 @@ class Level {
 		ctx.fillText( 'DEVOURED BY FEAR', js13k.Renderer.centerX, js13k.Renderer.centerY );
 
 		this.drawOption( ctx, 0, 'try again', 60 );
+	}
+
+
+	/**
+	 * Draw a health indicator for the player.
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	drawHP( ctx ) {
+		const centerX = js13k.Renderer.centerX;
+		const res = js13k.Renderer.res;
+
+		ctx.fillStyle = 'rgb(255,200,0)';
+
+		for( let i = 0; i < 3 && this.player.hp > i; i++ ) {
+			ctx.fillRect( centerX - 91.5 + i * 61, res - 30, 60, 10 );
+		}
 	}
 
 

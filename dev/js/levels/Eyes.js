@@ -20,18 +20,30 @@ class Level_Eyes extends js13k.Level {
 		this.player.x = ( width - this.player.w ) / 2;
 		this.player.y = ( height - this.player.h ) / 2;
 
-		this.dangers.push(
-			new js13k.LevelObject.DangerEye( this, 0, 0 ),
-			new js13k.LevelObject.DangerEye( this, width, 0 ),
-			new js13k.LevelObject.DangerEye( this, width, height ),
-			new js13k.LevelObject.DangerEye( this, 0, height )
-		);
+		const DangerEye = js13k.LevelObject.DangerEye;
 
-		const de = this.dangers[0];
-		this.dangers[0].x -= de.w;
-		this.dangers[3].x -= de.w;
-		this.dangers[2].y -= de.h;
-		this.dangers[3].y -= de.h;
+		this.phase1 = [
+			new DangerEye( this, -DangerEye.W, 0 ),
+			new DangerEye( this, width / 2 - DangerEye.W, 0 ),
+			new DangerEye( this, width, 0 ),
+			new DangerEye( this, width, height / 2 - DangerEye.H ),
+			new DangerEye( this, width, height - DangerEye.H ),
+			new DangerEye( this, width / 2 - DangerEye.W, height - DangerEye.H ),
+			new DangerEye( this, -DangerEye.W, height - DangerEye.H ),
+			new DangerEye( this, -DangerEye.W, height / 2 - DangerEye.H ),
+			new DangerEye( this, -DangerEye.W, 0 ),
+			new DangerEye( this, width / 2 - DangerEye.W, 0 ),
+			new DangerEye( this, width, 0 ),
+			new DangerEye( this, width, height / 2 - DangerEye.H ),
+			new DangerEye( this, width, height - DangerEye.H ),
+			new DangerEye( this, width / 2 - DangerEye.W, height - DangerEye.H ),
+			new DangerEye( this, -DangerEye.W, height - DangerEye.H ),
+			new DangerEye( this, -DangerEye.W, height / 2 - DangerEye.H )
+		];
+
+		this.phase2 = [
+			// TODO:
+		];
 
 		[this.cnvHit, this.ctxHit] = js13k.Renderer.getOffscreenCanvas( this.player.w, this.player.h );
 	}
@@ -92,9 +104,24 @@ class Level_Eyes extends js13k.Level {
 	update( dt ) {
 		super.update( dt );
 
-		if( !this.started && this.timer > dt * 120 ) {
-			this.dangers.forEach( danger => danger.start() );
-			this.started = true;
+		// Start phase 1.
+		if( !this.started && this.timer > dt * 80 ) {
+			this.dangers = this.phase1.slice();
+			js13k.shuffle( this.dangers );
+
+			this.dangers.forEach( ( danger, i ) => {
+				danger.targetX = js13k.Renderer.centerX + Math.random() * 200;
+				danger.targetY = js13k.Renderer.centerY + Math.random() * 200;
+				danger.start( i * 33 );
+			} );
+
+			this.started = 1;
+		}
+		// Start phase 2.
+		else if( this.timer > dt * 600 ) {
+			// TODO: Phase 2
+
+			this.started = 2;
 		}
 	}
 
