@@ -21,7 +21,11 @@ class LevelObject {
 		this.w = data.w || 0;
 		this.h = data.h || 0;
 
+		this.angle = 0;
 		this.level = level;
+		this.sp = 1; // speed
+		this.started = 0;
+		this.ended = 0;
 	}
 
 
@@ -40,6 +44,14 @@ class LevelObject {
 		}
 
 		return { x, y };
+	}
+
+
+	/**
+	 *
+	 */
+	start() {
+		this.started = this.level.timer;
 	}
 
 

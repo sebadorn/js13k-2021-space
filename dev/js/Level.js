@@ -25,6 +25,7 @@ class Level {
 	 */
 	checkHit() {
 		const hitbox = this.player.getHitbox();
+		const scale = js13k.Renderer.scale;
 
 		// Pixel-perfect collision detection with the player.
 		//
@@ -34,7 +35,8 @@ class Level {
 		// of that small canvas and check for certain colors.
 		this.ctxHit.clearRect( 0, 0, hitbox[2], hitbox[3] );
 		this.ctxHit.drawImage(
-			js13k.Renderer.cnvDanger, ...hitbox,
+			js13k.Renderer.cnvDanger,
+			scale * hitbox[0], scale * hitbox[1], scale * hitbox[2], scale * hitbox[3],
 			0, 0, hitbox[2], hitbox[3]
 		);
 
@@ -91,7 +93,7 @@ class Level {
 
 		ctx.lineWidth = lw;
 		ctx.strokeStyle = '#97387F';
-		ctx.strokeRect( offset, offset, js13k.Renderer.cnv.width - lw, js13k.Renderer.cnv.height - lw );
+		ctx.strokeRect( offset, offset, js13k.Renderer.res - lw, js13k.Renderer.res - lw );
 	}
 
 

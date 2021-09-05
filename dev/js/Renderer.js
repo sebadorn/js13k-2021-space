@@ -29,6 +29,12 @@ js13k.Renderer = {
 	// cnvUI: null,
 	// ctxUI: null,
 
+	// Target resolution which would mean a scaling factor of 1.0.
+	res: 1000,
+	// Scaling factor. Updated in resize().
+	scale: 1,
+
+	// Loaded sprites.
 	sprites: {},
 
 
@@ -36,9 +42,12 @@ js13k.Renderer = {
 	 * Clear the canvas.
 	 */
 	clear() {
-		this.ctx.clearRect( 0, 0, this.cnv.width, this.cnv.height );
-		this.ctxDanger.clearRect( 0, 0, this.cnvDanger.width, this.cnvDanger.height );
-		this.ctxUI.clearRect( 0, 0, this.cnvUI.width, this.cnvUI.height );
+		const width = this.cnv.width / this.scale;
+		const height = this.cnv.height / this.scale;
+
+		this.ctx.clearRect( 0, 0, width, height );
+		this.ctxDanger.clearRect( 0, 0, width, height );
+		this.ctxUI.clearRect( 0, 0, width, height );
 	},
 
 
@@ -55,8 +64,14 @@ js13k.Renderer = {
 	 * Draw the pause screen.
 	 */
 	drawPause() {
+		const width = this.cnvUI.width / this.scale;
+		const height = this.cnvUI.height / this.scale;
+
+		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
+		this.ctxUI.clearRect( 0, 0, width, height );
+
 		this.ctxUI.fillStyle = 'rgba(0,0,0,0.4)';
-		this.ctxUI.fillRect( 0, 0, this.cnvUI.width, this.cnvUI.height );
+		this.ctxUI.fillRect( 0, 0, width, height );
 
 		this.ctxUI.fillStyle = '#FFF';
 		this.ctxUI.font = 'normal 56px monospace';
@@ -180,7 +195,10 @@ js13k.Renderer = {
 
 			this.ctx.lineWidth = 1;
 			this.ctx.textBaseline = 'alphabetic';
-			this.ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+
+			this.ctx.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
+			this.ctxDanger.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
+			this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
 
 			if( this.isPaused ) {
 				this.drawPause();
@@ -194,13 +212,13 @@ js13k.Renderer = {
 			// Draw FPS info
 			if( js13k.DEBUG ) {
 				this.ctxUI.fillStyle = '#000';
-				this.ctxUI.fillRect( 10, this.cnv.height - 45, 90, 29 );
+				this.ctxUI.fillRect( 10, this.res - 45, 90, 29 );
 
 				this.ctxUI.fillStyle = '#FFF';
 				this.ctxUI.font = 'normal 16px monospace';
 				this.ctxUI.textAlign = 'left';
 				this.ctxUI.textBaseline = 'bottom';
-				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 20, this.cnv.height - 20 );
+				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 20, this.res - 20 );
 			}
 		}
 
@@ -274,8 +292,10 @@ js13k.Renderer = {
 		this.cnvUI.height = h;
 		this.cnvUI.width = w;
 
-		this.centerX = Math.round( w / 2 );
-		this.centerY = Math.round( h / 2 );
+		this.centerX = Math.round( this.res / 2 );
+		this.centerY = this.centerX;
+
+		this.scale = w / this.res;
 
 		if( this.isPaused ) {
 			clearTimeout( this._timeoutDrawPause );

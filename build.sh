@@ -37,7 +37,6 @@ terser \
 	'LevelObject.js' \
 	'Player.js' \
 	'Renderer.js' \
-	'UI.js' \
 	'dangers/DangerEye.js' \
 	'dangers/SmallBite.js' \
 	'levels/Intro.js' \
@@ -65,11 +64,17 @@ zip -9 -q -r "$OUT_FILE" ./*
 
 BEFORE_ADVZIP_SIZE=$( stat --printf="%s" "$OUT_FILE" )
 
+# Improve compression with ECT:
+# https://github.com/fhanau/Efficient-Compression-Tool
+# ECT_BIN="$HOME/programming/Efficient-Compression-Tool/build/ect"
+# $ECT_BIN -9 -q -strip -zip "$OUT_FILE"
+
 # Further optimize the compression.
 # advzip can be installed from the "advancecomp" package.
 # 4: best compression
 # i: additional iterations
 advzip -q -z -4 -i 200 "$OUT_FILE"
+
 # Test integrity of file.
 # STDOUT(1) is just the file name.
 # STDERR(2) shows actual errors, if there are some.

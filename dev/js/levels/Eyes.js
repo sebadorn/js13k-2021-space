@@ -13,8 +13,8 @@ class Level_Eyes extends js13k.Level {
 	constructor() {
 		super();
 
-		const width = js13k.Renderer.cnv.width;
-		const height = js13k.Renderer.cnv.height;
+		const width = js13k.Renderer.res;
+		const height = js13k.Renderer.res;
 
 		this.player = new js13k.Player( this );
 		this.player.x = ( width - this.player.w ) / 2;
@@ -47,12 +47,24 @@ class Level_Eyes extends js13k.Level {
 
 		let x = centerX - 90;
 		let y = centerY - 90;
-		ctx.setTransform( 2, 0, 0, 2, -x, -y );
+
+		ctx.translate( x, y );
+		ctx.scale( 2, 2 );
+		ctx.translate( -x, -y );
+
 		ctx.drawImage( js13k.Renderer.sprites.bg_eye_ball, x, y - 10 );
+
+		ctx.setTransform(
+			js13k.Renderer.scale, 0, 0,
+			js13k.Renderer.scale, 0, 0
+		);
 
 		x = centerX - 15;
 		y = centerY - 50;
-		ctx.setTransform( 2, 0, 0, 2, -x, -y );
+
+		ctx.translate( x, y );
+		ctx.scale( 2, 2 );
+		ctx.translate( -x, -y );
 
 		// Have the eye look in the direction of the player.
 		const playerCenter = this.player.getCenter();
@@ -66,7 +78,10 @@ class Level_Eyes extends js13k.Level {
 		y += Math.sin( -diff[1] ) * 14 - 10;
 		ctx.drawImage( js13k.Renderer.sprites.bg_eye_iris, x, y );
 
-		ctx.setTransform( 1, 0, 0, 1, 0, 0 );
+		ctx.setTransform(
+			js13k.Renderer.scale, 0, 0,
+			js13k.Renderer.scale, 0, 0
+		);
 	}
 
 
@@ -78,7 +93,7 @@ class Level_Eyes extends js13k.Level {
 		super.update( dt );
 
 		if( !this.started && this.timer > dt * 120 ) {
-			this.dangers.forEach( danger => danger.started = true );
+			this.dangers.forEach( danger => danger.start() );
 			this.started = true;
 		}
 	}
