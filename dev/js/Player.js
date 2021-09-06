@@ -59,13 +59,6 @@ class Player extends js13k.LevelObject {
 			const frame = this.level.timer % 20 < 10 ? 0 : 1;
 			ctx.drawImage( Player.sprite[frame], this.x, this.y );
 		}
-
-		// Draw hitbox.
-		// if( js13k.DEBUG ) {
-		// 	ctx.lineWidth = 2;
-		// 	ctx.strokeStyle = this.hit > this.level.timer ? 'blue' : '#FFF';
-		// 	ctx.strokeRect( ...this.getHitbox() );
-		// }
 	}
 
 

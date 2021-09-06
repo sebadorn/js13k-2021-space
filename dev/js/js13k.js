@@ -9,6 +9,7 @@ const js13k = {
 
 	// Config
 	DEBUG: true,
+	FONT: '"Courier New", monospace',
 	TARGET_FPS: 60,
 
 

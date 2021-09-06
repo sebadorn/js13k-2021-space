@@ -37,6 +37,7 @@ terser \
 	'LevelObject.js' \
 	'Player.js' \
 	'Renderer.js' \
+	'dangers/BoomEye.js' \
 	'dangers/DangerEye.js' \
 	'dangers/SmallBite.js' \
 	'levels/Intro.js' \
@@ -56,6 +57,11 @@ find -type f -name '*.js' -not -name 'i.js' -delete
 
 JS_SIZE=$( stat --printf="%s" 'i.js' )
 HTML_SIZE=$( stat --printf="%s" 'index.html' )
+
+# Uncomment to use roadroller.
+# roadroller -q 'i.js' -o 'i.js'
+# JS_SIZE=$( stat --printf="%s" 'i.js' )
+
 UNZIPPED_SIZE=$(( $JS_SIZE + $HTML_SIZE ))
 
 # ZIP up everything needed.

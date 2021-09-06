@@ -74,7 +74,7 @@ js13k.Renderer = {
 		this.ctxUI.fillRect( 0, 0, width, height );
 
 		this.ctxUI.fillStyle = '#FFF';
-		this.ctxUI.font = 'normal 56px monospace';
+		this.ctxUI.font = 'normal 56px ' + js13k.FONT;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
 		this.ctxUI.fillText( 'PAUSED', this.centerX, 20 );
@@ -215,10 +215,10 @@ js13k.Renderer = {
 				this.ctxUI.fillRect( 10, this.res - 45, 90, 29 );
 
 				this.ctxUI.fillStyle = '#FFF';
-				this.ctxUI.font = 'normal 16px monospace';
+				this.ctxUI.font = 'bold 16px ' + js13k.FONT;
 				this.ctxUI.textAlign = 'left';
 				this.ctxUI.textBaseline = 'bottom';
-				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 20, this.res - 20 );
+				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 20, this.res - 22 );
 			}
 		}
 

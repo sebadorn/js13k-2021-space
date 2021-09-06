@@ -181,7 +181,7 @@ js13k.Audio = {
 		osc.frequency.setValueAtTime( freq, this.ctx.currentTime );
 		osc.connect( this.gain );
 		osc.start();
-		osc.stop( this.ctx.currenTime + duration );
+		osc.stop( this.ctx.currentTime + duration );
 
 		return osc;
 	},

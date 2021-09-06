@@ -38,7 +38,7 @@ class Level_Intro extends js13k.Level {
 		const ctx = js13k.Renderer.ctx;
 		const centerX = js13k.Renderer.centerX;
 
-		ctx.font = 'bold 36px "Courier New", monospace';
+		ctx.font = 'bold 36px ' + js13k.FONT;
 		ctx.textAlign = 'center';
 
 		ctx.fillStyle = '#444';

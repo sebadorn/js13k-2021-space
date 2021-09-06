@@ -150,7 +150,7 @@ class Level {
 		ctx.lineWidth = 3;
 		ctx.strokeRect( x, y, width, height );
 
-		ctx.font = 'bold 20px "Courier New", monospace';
+		ctx.font = 'bold 20px ' + js13k.FONT;
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'top';
 		ctx.fillStyle = '#FFF';
@@ -176,8 +176,6 @@ class Level {
 			this.dangers.forEach( danger => danger.update( dt ) );
 
 			if( this.player ) {
-				this.border += dt * 0.03;
-
 				const dir = js13k.Input.getDirections();
 				this.player.update( dt, dir );
 

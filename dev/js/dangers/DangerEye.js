@@ -52,17 +52,23 @@ class DangerEye extends js13k.LevelObject {
 
 		// Laser attack.
 		if( this.attackStarted ) {
-			const progress = Math.min( ( this.level.timer - this._start ) / 140, 1 );
+			const progress = Math.min( ( this.level.timer - this._start ) / 60, 1 );
 			const alpha = progress * progress;
 			const x = this.x + this.w / 2;
 
+			ctx.fillStyle = `rgba(255,255,255,${alpha})`;
 			ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-			ctx.lineWidth = Math.round( progress * 30 );
+			ctx.lineWidth = Math.round( progress * progress * 30 );
 
 			ctx.beginPath();
 			ctx.moveTo( x, this.y );
-			ctx.lineTo( x, -js13k.Renderer.res * 1.5 );
+			ctx.lineTo( x, -js13k.Renderer.res * 0.6 );
 			ctx.stroke();
+
+			const r = ctx.lineWidth * 1.1;
+			ctx.beginPath();
+			ctx.ellipse( x, -js13k.Renderer.res * 0.6, r, r, 0, 0, 360 );
+			ctx.fill();
 		}
 
 		ctx.setTransform( js13k.Renderer.scale, 0, 0, js13k.Renderer.scale, 0, 0 );

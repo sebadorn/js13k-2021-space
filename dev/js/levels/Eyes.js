@@ -51,6 +51,23 @@ class Level_Eyes extends js13k.Level {
 
 	/**
 	 *
+	 */
+	draw() {
+		super.draw();
+
+		if( !this.phase ) {
+			const center = js13k.Renderer.centerX;
+			const ctx = js13k.Renderer.ctx;
+			ctx.fillStyle = '#FFF';
+			ctx.textAlign = 'center';
+			ctx.fillText( 'Avoid all attacks.', center, center - 100 );
+			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
+		}
+	}
+
+
+	/**
+	 *
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawBackground( ctx ) {
@@ -104,8 +121,14 @@ class Level_Eyes extends js13k.Level {
 	update( dt ) {
 		super.update( dt );
 
-		// Start phase 1.
-		if( !this.started && this.timer > dt * 80 ) {
+		// Intro.
+		if( !this.phase ) {
+			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+				this.phase = 1;
+			}
+		}
+		// Next main phase.
+		else if( this.phase === 1 ) {
 			this.dangers = this.phase1.slice();
 			js13k.shuffle( this.dangers );
 
@@ -115,13 +138,19 @@ class Level_Eyes extends js13k.Level {
 				danger.start( i * 33 );
 			} );
 
-			this.started = 1;
+			this.phase = 2;
+			this._end = this.timer + this.dangers.length * 33 + 100;
 		}
-		// Start phase 2.
-		else if( this.timer > dt * 600 ) {
-			// TODO: Phase 2
-
-			this.started = 2;
+		// Next main phase.
+		else if( this.phase === 2 && this.timer > this._end ) {
+			// TODO:
+			this.phase = 3;
+			this._end = this.timer + 200;
+		}
+		// Next main phase.
+		else if( this.phase === 3 && this.timer > this._end ) {
+			// TODO:
+			this.phase = 4;
 		}
 	}
 
