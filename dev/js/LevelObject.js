@@ -23,6 +23,7 @@ class LevelObject {
 
 		this._start = Infinity;
 		this.angle = 0;
+		this.canMove = true;
 		this.ended = 0;
 		this.level = level;
 		this.sp = 1; // speed

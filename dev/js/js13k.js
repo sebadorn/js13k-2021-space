@@ -55,14 +55,14 @@ const js13k = {
 	/**
 	 * Normalize a 2D vector.
 	 * @param  {number[]} vec
-	 * @return {number[]}
+	 * @return {Array} Index 0: normalized vector; index 1: length of vector before normalizing
 	 */
 	normalize( vec ) {
 		const length = Math.sqrt( vec[0] * vec[0] + vec[1] * vec[1] );
 		vec[0] /= length || 1;
 		vec[1] /= length || 1;
 
-		return vec;
+		return [vec, length];
 	},
 
 

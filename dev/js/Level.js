@@ -48,7 +48,27 @@ class Level {
 			const b = imageData.data[i + 2];
 			const a = imageData.data[i + 3];
 
-			if( r >= 254 && g >= 254 && b >= 254 && a >= 127 ) {
+			// White, e.g. eye laser.
+			if(
+				r >= 254 &&
+				g >= 254 &&
+				b >= 254 &&
+				a >= 159
+			) {
+				return true;
+			}
+
+			// Border (blue).
+			// Being a bit paranoid here about color precision. Better
+			// check for a small interval instead of a precise value.
+			// Browser extensions like CanvasBlocker will tamper with
+			// the read pixel image data (and also cause bad performance).
+			if(
+				r >= 59 && r <= 61 &&
+				g >= 118 && g <= 120 &&
+				b >= 146 && b <= 148 &&
+				a >= 254
+			) {
 				return true;
 			}
 		}
@@ -86,15 +106,18 @@ class Level {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2D} ctx
+	 * @param  {CanvasRenderingContext2D} ctx
+	 * @return {number} Current border width.
 	 */
 	drawBorder( ctx ) {
-		const lw = Math.round( 10 + this.border );
+		const lw = Math.round( 20 + this.border );
 		const offset = lw * 0.5;
 
 		ctx.lineWidth = lw;
-		ctx.strokeStyle = '#97387F';
+		ctx.strokeStyle = '#3C7793';
 		ctx.strokeRect( offset, offset, js13k.Renderer.res - lw, js13k.Renderer.res - lw );
+
+		return lw;
 	}
 
 
@@ -120,9 +143,13 @@ class Level {
 		const res = js13k.Renderer.res;
 
 		ctx.fillStyle = 'rgb(255,200,0)';
+		ctx.strokeStyle = '#FFF';
+		ctx.beginPath();
 
-		for( let i = 0; i < 3 && this.player.hp > i; i++ ) {
-			ctx.fillRect( centerX - 91.5 + i * 61, res - 30, 60, 10 );
+		for( let i = 0; i < 3; i++ ) {
+			ctx.beginPath();
+			ctx.ellipse( centerX - 30 + i * 30, res - 20, 10, 10, 0, 0, 360 );
+			this.player.hp > i ? ctx.fill() : ctx.stroke();
 		}
 	}
 

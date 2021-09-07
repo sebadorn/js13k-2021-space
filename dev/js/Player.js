@@ -101,6 +101,10 @@ class Player extends js13k.LevelObject {
 		this.x += Math.round( dt * dir.x * this.sp );
 		this.y += Math.round( dt * dir.y * this.sp );
 
+		// Confine to area.
+		this.x = Math.min( js13k.Renderer.res - this.w, Math.max( 0, this.x ) );
+		this.y = Math.min( js13k.Renderer.res - this.h, Math.max( 0, this.y ) );
+
 		if( this.flicker > 0 ) {
 			this.flicker -= dt;
 		}

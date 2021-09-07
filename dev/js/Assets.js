@@ -30,9 +30,9 @@ js13k.Assets = {
 			s: [34, 37]
 		},
 		br_eye: {
-			data: 'aaa               aaa               aaa               aaa               aa               aa            aaaaa          aaa  a         aa aa aa        a   aa a       aa    a  a      aa       aa    aaaaa    aaa    a   aa   aaaa   a        aa a   a        aa a   aaaa     aa a   a  aaaa  aa a   a        aa a   a        aaaa   aa    aa  aaa    aa  aa   aa      aaaa  a  a       a    a aa       aa aa aa         aaa aa            aaa             aa            aaa           aaa           aaa          aaaa            ',
+			data: 'aaa             aaaaa           aaaaaaa         aaa   aaa       aa      aa      a        aa     a      aaaaa    a     aaa  a    a    aa aa aa        a   aa a       aa    a  a      aa       aa    aaaaa    aaa    a   aa   aaaa   a        aa a   a        aa a   aaaa     aa a   a  aaaa  aa a   a        aa a   a        aaaa   aa    aa  aaa    aa  aa   aa      aaaa  a  a       a    a aa a     aa aa aa  a      aaa aa   a        aaa    a        aa     aa     aaa      aaaa aaa        aaaaaa          aaaa            ',
 			c: {
-				a: [255, 255, 255, 255]
+				a: [60, 119, 147, 255]
 			},
 			s: [16, 32]
 		},

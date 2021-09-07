@@ -18,7 +18,20 @@ class DangerEye extends js13k.LevelObject {
 	constructor( level, x, y, targetX = 0, targetY = 0 ) {
 		super( level, { x, y, w: DangerEye.W, h: DangerEye.H } );
 
-		this.sp = 1.25;
+		// 0: none, can be set from outside
+		// 1: player
+		// 2: targetX/Y values
+		this.angleTarget = 0;
+
+		// 0: After set time
+		// 1: After reaching target
+		this.attackStart = 0;
+
+		// 0: No end
+		// 1: After set time
+		this.attackEnd = 1;
+
+		this.sp = 3;
 		this.targetX = targetX;
 		this.targetY = targetY;
 
@@ -36,7 +49,7 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
-		if( this._start > this.level.timer || this.ended ) {
+		if( this.attackEnd && ( this._start > this.level.timer || this.ended ) ) {
 			return;
 		}
 
@@ -52,9 +65,9 @@ class DangerEye extends js13k.LevelObject {
 
 		// Laser attack.
 		if( this.attackStarted ) {
-			const progress = Math.min( ( this.level.timer - this._start ) / 60, 1 );
+			const progress = Math.min( ( this.level.timer - this._start ) / 100, 1 );
 			const alpha = progress * progress;
-			const x = this.x + this.w / 2;
+			const x = this.x + this.w * 0.5;
 
 			ctx.fillStyle = `rgba(255,255,255,${alpha})`;
 			ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
@@ -62,12 +75,12 @@ class DangerEye extends js13k.LevelObject {
 
 			ctx.beginPath();
 			ctx.moveTo( x, this.y );
-			ctx.lineTo( x, -js13k.Renderer.res * 0.6 );
+			ctx.lineTo( x, this.y - js13k.Renderer.res * 0.7 );
 			ctx.stroke();
 
 			const r = ctx.lineWidth * 1.1;
 			ctx.beginPath();
-			ctx.ellipse( x, -js13k.Renderer.res * 0.6, r, r, 0, 0, 360 );
+			ctx.ellipse( x, this.y - js13k.Renderer.res * 0.7, r, r, 0, 0, 360 );
 			ctx.fill();
 		}
 
@@ -84,56 +97,84 @@ class DangerEye extends js13k.LevelObject {
 			return;
 		}
 
-		if( this.attackStarted ) {
+		if( this.attackEnd === 1 && this.attackStarted ) {
 			this.ended = ( this.level.timer - this._start ) > 180;
 			return;
 		}
 
-		this.attackStarted = ( this.level.timer - this._start ) > 30;
+		if( this.attackStart === 0 ) {
+			this.attackStarted = ( this.level.timer - this._start ) > 30;
+		}
 
-		// Move to target position.
 		const center = this.getCenter();
-		const diffX = center.x - this.targetX;
-		const diffY = center.y - this.targetY;
 
-		let moveX = 0;
-		let moveY = 0;
+		if( this.canMove ) {
+			// Move to target position.
+			const diffX = center.x - this.targetX;
+			const diffY = center.y - this.targetY;
 
-		if( diffX > 0 ) {
-			moveX -= dt * this.sp;
+			if( this.attackStart === 1 ) {
+				if(
+					Math.abs( diffX ) < 1 &&
+					Math.abs( diffY ) < 1
+				) {
+					this.attackStarted = true;
+					return;
+				}
+			}
+
+			let moveX = 0;
+			let moveY = 0;
+
+			if( diffX > 0 ) {
+				moveX -= dt * this.sp;
+			}
+			else if( diffX < 0 ) {
+				moveX += dt * this.sp;
+			}
+
+			if( diffY > 0 ) {
+				moveY -= dt * this.sp;
+			}
+			else if( diffY < 0 ) {
+				moveY += dt * this.sp;
+			}
+
+			this.x += moveX;
+			this.y += moveY;
 		}
-		else if( diffX < 0 ) {
-			moveX += dt * this.sp;
+
+		if( this.angleTarget === 1 ) {
+			// Look in direction of player.
+			// Calculate angle.
+			//
+			// What has been shortened:
+			// ------------------------
+			// const vec1 = [0, -1];
+			// Math.atan2( vec1[1], vec1[0] );
+			// -> -1.5707963267948966
+
+			const playerCenter = this.level.player.getCenter();
+
+			const [vec2, length] = js13k.normalize([
+				playerCenter.x - center.x,
+				playerCenter.y - center.y
+			]);
+
+			if( length > 4 ) {
+				this.angle = Math.atan2( vec2[1], vec2[0] ) + 1.5707963267948966;
+			}
 		}
+		else if( this.angleTarget === 2 ) {
+			const [vec2, length] = js13k.normalize([
+				this.targetX - center.x,
+				this.targetY - center.y
+			]);
 
-		if( diffY > 0 ) {
-			moveY -= dt * this.sp;
+			if( length > 4 ) {
+				this.angle = Math.atan2( vec2[1], vec2[0] ) + 1.5707963267948966;
+			}
 		}
-		else if( diffY < 0 ) {
-			moveY += dt * this.sp;
-		}
-
-		this.x += moveX;
-		this.y += moveY;
-
-
-		// Look in direction of player.
-		// Calculate angle.
-		//
-		// What has been shortened:
-		// ------------------------
-		// const vec1 = [0, -1];
-		// Math.atan2( vec1[1], vec1[0] );
-		// -> -1.5707963267948966
-
-		const playerCenter = this.level.player.getCenter();
-
-		const vec2 = js13k.normalize([
-			playerCenter.x - center.x,
-			playerCenter.y - center.y
-		]);
-
-		this.angle = Math.atan2( vec2[1], vec2[0] ) + 1.5707963267948966;
 	}
 
 
