@@ -3,7 +3,7 @@
 
 {
 
-class DangerEye extends js13k.LevelObject {
+class LaserEye extends js13k.LevelObject {
 
 
 	/**
@@ -16,7 +16,7 @@ class DangerEye extends js13k.LevelObject {
 	 * @param {number}     [targetY = 0]
 	 */
 	constructor( level, x, y, targetX = 0, targetY = 0 ) {
-		super( level, { x, y, w: DangerEye.W, h: DangerEye.H } );
+		super( level, { x, y, w: LaserEye.W, h: LaserEye.H } );
 
 		// 0: none, can be set from outside
 		// 1: player
@@ -35,10 +35,10 @@ class DangerEye extends js13k.LevelObject {
 		this.targetX = targetX;
 		this.targetY = targetY;
 
-		if( !DangerEye.sprite ) {
-			DangerEye.sprite = [
-				DangerEye.preRender( this.w, this.h, 0 ),
-				DangerEye.preRender( this.w, this.h, this.w )
+		if( !LaserEye.sprite ) {
+			LaserEye.sprite = [
+				LaserEye.preRender( this.w, this.h, 0 ),
+				LaserEye.preRender( this.w, this.h, this.w )
 			];
 		}
 	}
@@ -61,7 +61,7 @@ class DangerEye extends js13k.LevelObject {
 		ctx.rotate( this.angle );
 		ctx.translate( -center.x, -center.y );
 
-		ctx.drawImage( DangerEye.sprite[frame], Math.round( this.x ), Math.round( this.y ) );
+		ctx.drawImage( LaserEye.sprite[frame], Math.round( this.x ), Math.round( this.y ) );
 
 		// Laser attack.
 		if( this.attackStarted ) {
@@ -181,8 +181,8 @@ class DangerEye extends js13k.LevelObject {
 }
 
 
-DangerEye.W = 61;
-DangerEye.H = 127;
+LaserEye.W = 61;
+LaserEye.H = 127;
 
 
 /**
@@ -192,7 +192,7 @@ DangerEye.H = 127;
  * @param  {number} offsetX
  * @return {HTMLCanvasElement}
  */
-DangerEye.preRender = function( w, h, offsetX ) {
+LaserEye.preRender = function( w, h, offsetX ) {
 	const [canvas, ctx] = js13k.Renderer.getOffscreenCanvas( w, h );
 
 	ctx.drawImage(
@@ -205,6 +205,6 @@ DangerEye.preRender = function( w, h, offsetX ) {
 };
 
 
-js13k.LevelObject.DangerEye = DangerEye;
+js13k.LevelObject.LaserEye = LaserEye;
 
 }

@@ -208,6 +208,7 @@ class Level {
 
 				if( this.player.hit <= this.timer && this.checkHit() ) {
 					this.player.hp--;
+					js13k.Renderer.shake();
 
 					if( this.player.hp > 0 ) {
 						// How long the "has been hit" state stays.

@@ -21,7 +21,8 @@ class Level_Eyes extends js13k.Level {
 		this.player.x = ( width - this.player.w ) * 0.5;
 		this.player.y = ( height - this.player.h ) * 0.5;
 
-		const DangerEye = js13k.LevelObject.DangerEye;
+		const FlyEye = js13k.LevelObject.FlyEye;
+		const LaserEye = js13k.LevelObject.LaserEye;
 
 
 		// Phase 1
@@ -30,11 +31,11 @@ class Level_Eyes extends js13k.Level {
 
 		for( let i = 0; i < 15; i++ ) {
 			const isEven = i % 2;
-			const x = isEven ? -DangerEye.H : width;
-			const y = Math.round( i * DangerEye.W );
+			const x = isEven ? -LaserEye.H : width;
+			const y = Math.round( i * LaserEye.W );
 			const tx = isEven ? 0 : width;
 
-			const d = new DangerEye( this, x, y, tx, y + Math.round( DangerEye.H * 0.5 ) );
+			const d = new LaserEye( this, x, y, tx, y + Math.round( LaserEye.H * 0.5 ) );
 			d.angle = isEven ? Math.PI * 0.5 : Math.PI * 1.5;
 
 			this.phase1.push( d );
@@ -44,25 +45,31 @@ class Level_Eyes extends js13k.Level {
 		// Phase 2
 
 		// From the left
-		const d1 = new DangerEye( this, 0, center - DangerEye.H * 0.5, center + 30, center );
+		const d1 = new LaserEye( this, 0, center - LaserEye.H * 0.5, center + 30, center );
 		d1.angle = Math.PI * 0.5;
 
 		// From the top
-		const d2 = new DangerEye( this, center - DangerEye.W * 0.5, 0, center, center + 30 );
+		const d2 = new LaserEye( this, center - LaserEye.W * 0.5, 0, center, center + 30 );
 		d2.angle = Math.PI;
 
 		// From the right
-		const d3 = new DangerEye( this, width, center - DangerEye.H * 0.5, center - 30, center );
+		const d3 = new LaserEye( this, width, center - LaserEye.H * 0.5, center - 30, center );
 		d3.angle = Math.PI * 1.5;
 
 		// From the bottom
-		const d4 = new DangerEye( this, center - DangerEye.W * 0.5, height, center, center - 30 );
+		const d4 = new LaserEye( this, center - LaserEye.W * 0.5, height, center, center - 30 );
 
 		this.phase2 = [d1, d2, d3, d4];
 		this.phase2.forEach( d => {
 			d.attackEnd = 0;
 			d.attackStart = 1;
 		} );
+		this.phase2.push(
+			new FlyEye( this, center - 240, -32, center - 240, height + 32 ),
+			new FlyEye( this, center - 100, -300, center - 100, height + 32 ),
+			new FlyEye( this, center + 160, -100, center + 160, height + 32 ),
+			new FlyEye( this, center + 240, -400, center + 240, height + 32 )
+		);
 
 
 		// Phase 3
@@ -104,6 +111,7 @@ class Level_Eyes extends js13k.Level {
 
 		const center = js13k.Renderer.centerX;
 		const ctx = js13k.Renderer.ctx;
+		ctx.font = 'bold 20px ' + js13k.FONT;
 		ctx.fillStyle = '#FFF';
 		ctx.textAlign = 'center';
 
@@ -169,18 +177,48 @@ class Level_Eyes extends js13k.Level {
 	 */
 	drawBorder( ctx ) {
 		const border = super.drawBorder( ctx );
-		const offsetX = Math.round( border + Math.sin( this.timer / 20 ) * 4 ) - 4;
+		const offsetX = Math.round( border + Math.sin( this.timer / 20 ) * 4 ) - 4.2;
+		const s = js13k.Renderer.scale;
 
 		// Left side.
 		ctx.drawImage( this._cnvBorder, offsetX, -96 );
 
 		// Right side.
-		const x = js13k.Renderer.res - offsetX;
-		const s = js13k.Renderer.scale;
+		let x = js13k.Renderer.res - offsetX;
 
 		// scale (global res) x +translate x scale (flip) x -translate
 		ctx.setTransform( -s, 0, 0, s, 2 * s * x, 0 );
 		ctx.drawImage( this._cnvBorder, js13k.Renderer.res - offsetX, 0 );
+
+		// Bottom side.
+		let sin = Math.sin( -Math.PI * 0.5 );
+		let cos = Math.cos( -Math.PI * 0.5 );
+		x = border;
+		let y = js13k.Renderer.res - offsetX;
+
+		// scale (global res) x +translate x rotate x -translate
+		ctx.setTransform(
+			s * cos, s * sin,
+			-s * sin, s * cos,
+			s * ( x + y * sin - x * cos ), s * ( y - y * cos - x * sin )
+		);
+		ctx.drawImage( this._cnvBorder, x, y );
+
+		// Top side.
+		sin = Math.sin( Math.PI * 0.5 );
+		cos = Math.cos( Math.PI * 0.5 );
+		x = js13k.Renderer.res - border;
+		y = offsetX;
+
+		// scale (global res) x +translate x rotate x -translate
+		ctx.setTransform(
+			s * cos, s * sin,
+			-s * sin, s * cos,
+			s * ( x + y * sin - x * cos ), s * ( y - y * cos - x * sin )
+		);
+		ctx.drawImage( this._cnvBorder, js13k.Renderer.res - border, offsetX );
+
+		// reset
 		ctx.setTransform( s, 0, 0, s, 0, 0 );
 
 		return border;
@@ -218,23 +256,61 @@ class Level_Eyes extends js13k.Level {
 		else if( this.phase === 3 ) {
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
 				this.dangers = this.phase2;
-				this.dangers.forEach( danger => danger.start() );
+				this.dangers.forEach( ( danger, i ) => {
+					// LaserEyes
+					if( i < 4 ) {
+						danger.start();
+					}
+					// FlyEyes
+					else {
+						danger.sf = 1;
+						danger.start( 500 );
+					}
+				} );
 
 				this.phase = 4;
-				this._end = this.timer + 800;
+				this._end = this.timer + 1000;
 			}
 		}
 		// Eyes have reached the center. Start rotating.
-		else if( this.phase === 4 && this.timer > this._end - 540 && this.timer <= this._end ) {
-			// const DangerEye = js13k.LevelObject.DangerEye;
+		else if( this.phase === 4 && this.timer > this._end - 700 && this.timer <= this._end ) {
+			const LaserEye = js13k.LevelObject.LaserEye;
+			const center = js13k.Renderer.centerX;
+			const adjust = [
+				[-LaserEye.W * 0.5, -LaserEye.W * 0.5],
+				[0, -LaserEye.H * 0.5],
+				[LaserEye.W * 0.5, -LaserEye.W * 0.5],
+				[0, 0]
+			];
 
-			this.dangers.forEach( danger => {
-				danger.canMove = false;
-				// TODO: rotation not working as intented
-				// danger.x = danger.targetX - DangerEye.W * 0.5 + Math.sin( this.timer / 30 ) * 10;
-				// danger.y = danger.targetY - DangerEye.H * 0.5 + Math.cos( this.timer / 30 ) * 10;
-				danger.angle += dt * 0.01;
-				danger.angle = danger.angle % ( Math.PI * 2 );
+			// Switch direction after some time, but slower
+			// then to make it not feel to unfair.
+			const speed = ( this.timer / this._end ) < 0.7 ? 0.01 : -0.0075;
+
+			this.dangers.forEach( ( danger, i ) => {
+				// Rotate the LaserEyes.
+				if( i < 4 ) {
+					if( danger.canMove ) {
+						danger._c = danger.getCenter();
+					}
+
+					danger.canMove = false;
+					danger.angle = ( danger.angle + dt * speed ) % ( Math.PI * 2 );
+
+					const cos = Math.cos( danger.angle );
+					const sin = Math.sin( danger.angle );
+
+					const dc = {
+						x: danger._c.x + adjust[i][0],
+						y: danger._c.y + adjust[i][1]
+					};
+
+					const newX = dc.x * cos - dc.y * sin + center * ( 1 + sin - cos );
+					const newY = dc.x * sin + dc.y * cos + center * ( 1 - sin - cos );
+
+					danger.x = newX - LaserEye.W * 0.5;
+					danger.y = newY - LaserEye.H * 0.5;
+				}
 			} );
 		}
 		// Some text to confirm between main phases.
@@ -254,6 +330,19 @@ class Level_Eyes extends js13k.Level {
 		else if( this.phase === 6 && this.timer > this._end ) {
 			this.dangers = [];
 			this.phase = 7;
+		}
+
+		// Border update.
+		switch( this.phase ) {
+			case 2:
+				this.border += dt * 0.2;
+				this.border = Math.min( this.border, 80 );
+				break;
+
+			case 4:
+				this.border += dt * 0.2;
+				this.border = Math.min( this.border, 200 );
+				break;
 		}
 	}
 

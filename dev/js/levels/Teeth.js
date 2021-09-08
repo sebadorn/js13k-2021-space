@@ -16,7 +16,7 @@ class Level_Teeth extends js13k.Level {
 		this.player = new js13k.Player( this, 400, 400 );
 
 		this.dangers.push(
-			new js13k.LevelObject.DangerEye( this, 100, 100 ),
+			new js13k.LevelObject.LaserEye( this, 100, 100 ),
 			new js13k.LevelObject.SmallBite( this, 400, 100 )
 		);
 

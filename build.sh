@@ -37,8 +37,8 @@ terser \
 	'LevelObject.js' \
 	'Player.js' \
 	'Renderer.js' \
-	'dangers/BoomEye.js' \
-	'dangers/DangerEye.js' \
+	'dangers/FlyEye.js' \
+	'dangers/LaserEye.js' \
 	'dangers/SmallBite.js' \
 	'levels/Intro.js' \
 	'levels/Eyes.js' \

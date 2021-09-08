@@ -204,21 +204,33 @@ js13k.Renderer = {
 				this.drawPause();
 				return; // Stop the loop.
 			}
-			else {
-				this.level && this.level.update( dt );
-				this.draw( dt );
+
+			// Screen shake. Can be started with shake().
+			if( this._shakeEnd ) {
+				if( this._shakeEnd <= this.level.timer ) {
+					this._shakeEnd = 0;
+					this.cont.style.left = 0;
+					this.cont.style.top = 0;
+				}
+				else {
+					this.cont.style.left = Math.sin( this.level.timer ) * 3 + 'px';
+					this.cont.style.top = Math.cos( this.level.timer ) * 3 + 'px';
+				}
 			}
+
+			this.level.update( dt );
+			this.draw( dt );
 
 			// Draw FPS info
 			if( js13k.DEBUG ) {
 				this.ctxUI.fillStyle = '#000';
-				this.ctxUI.fillRect( 10, this.res - 45, 90, 29 );
+				this.ctxUI.fillRect( 30, this.res - 45, 160, 28 );
 
 				this.ctxUI.fillStyle = '#FFF';
 				this.ctxUI.font = 'bold 16px ' + js13k.FONT;
 				this.ctxUI.textAlign = 'right';
 				this.ctxUI.textBaseline = 'bottom';
-				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS', 90, this.res - 22 );
+				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS / ' + this.scale, 180, this.res - 22 );
 			}
 		}
 
@@ -280,27 +292,35 @@ js13k.Renderer = {
 	 * Resize the canvas.
 	 */
 	resize() {
-		const w = Math.min( window.innerWidth, window.innerHeight );
-		const h = w;
+		const size = Math.min( window.innerWidth, window.innerHeight );
 
-		this.cnv.height = h;
-		this.cnv.width = w;
+		this.cnv.height = size;
+		this.cnv.width = size;
 
-		this.cnvDanger.height = h;
-		this.cnvDanger.width = w;
+		this.cnvDanger.height = size;
+		this.cnvDanger.width = size;
 
-		this.cnvUI.height = h;
-		this.cnvUI.width = w;
+		this.cnvUI.height = size;
+		this.cnvUI.width = size;
 
 		this.centerX = Math.round( this.res / 2 );
 		this.centerY = this.centerX;
 
-		this.scale = w / this.res;
+		this.scale = size / this.res;
 
 		if( this.isPaused ) {
 			clearTimeout( this._timeoutDrawPause );
 			this._timeoutDrawPause = setTimeout( () => this.drawPause(), 100 );
 		}
+	},
+
+
+	/**
+	 * Shake the screen.
+	 * @param {number} [duration = 10]
+	 */
+	shake( duration = 10 ) {
+		this._shakeEnd = this.level.timer + duration;
 	},
 
 
