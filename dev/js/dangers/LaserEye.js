@@ -31,7 +31,7 @@ class LaserEye extends js13k.LevelObject {
 		// 1: After set time
 		this.attackEnd = 1;
 
-		this.sp = 3;
+		this.sp = 4;
 		this.targetX = targetX;
 		this.targetY = targetY;
 

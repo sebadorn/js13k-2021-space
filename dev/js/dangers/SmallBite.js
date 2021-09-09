@@ -14,7 +14,7 @@ class SmallBite extends js13k.LevelObject {
 	 * @param {number}      y
 	 */
 	constructor( level, x, y ) {
-		super( level, { x, y, w: 68, h: 37 } ); // height varies
+		super( level, { x, y, w: 64, h: 32 } ); // height varies
 
 		if( !SmallBite.sprite ) {
 			SmallBite.sprite = [

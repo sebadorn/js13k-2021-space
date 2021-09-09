@@ -11,8 +11,7 @@ js13k.Renderer = {
 	// Leaving them as comment to know they (will) exist.
 	// --------------------------------------------------
 	//
-	// centerX: 0,
-	// centerY: 0,
+	// center: 0,
 	// cont: null,
 	// last: 0,
 	// level: null,
@@ -42,12 +41,11 @@ js13k.Renderer = {
 	 * Clear the canvas.
 	 */
 	clear() {
-		const width = this.cnv.width / this.scale;
-		const height = this.cnv.height / this.scale;
+		const size = Math.ceil( this.cnv.width / this.scale );
 
-		this.ctx.clearRect( 0, 0, width, height );
-		this.ctxDanger.clearRect( 0, 0, width, height );
-		this.ctxUI.clearRect( 0, 0, width, height );
+		this.ctx.clearRect( 0, 0, size, size );
+		this.ctxDanger.clearRect( 0, 0, size, size );
+		this.ctxUI.clearRect( 0, 0, size, size );
 	},
 
 
@@ -64,20 +62,19 @@ js13k.Renderer = {
 	 * Draw the pause screen.
 	 */
 	drawPause() {
-		const width = this.cnvUI.width / this.scale;
-		const height = this.cnvUI.height / this.scale;
+		const size = Math.ceil( this.cnvUI.width / this.scale );
 
 		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
-		this.ctxUI.clearRect( 0, 0, width, height );
+		this.ctxUI.clearRect( 0, 0, size, size );
 
 		this.ctxUI.fillStyle = 'rgba(0,0,0,0.4)';
-		this.ctxUI.fillRect( 0, 0, width, height );
+		this.ctxUI.fillRect( 0, 0, size, size );
 
 		this.ctxUI.fillStyle = '#FFF';
 		this.ctxUI.font = 'normal 56px ' + js13k.FONT;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
-		this.ctxUI.fillText( 'PAUSED', this.centerX, 60 );
+		this.ctxUI.fillText( 'PAUSED', this.center, 60 );
 	},
 
 
@@ -128,7 +125,19 @@ js13k.Renderer = {
 	 * @param {function} cb
 	 */
 	loadSprites( cb ) {
-		const keys = Object.keys( js13k.Assets.sprites );
+		const sprites = js13k.Assets.sprites;
+		sprites.turret_ball = {
+			data: sprites.bg_eye_ball.data,
+			c: { a: [223, 68, 13, 255] },
+			s: sprites.bg_eye_ball.s
+		};
+		sprites.turret_iris = {
+			data: sprites.bg_eye_iris.data,
+			c: { a: [223, 68, 13, 255] },
+			s: sprites.bg_eye_iris.s
+		};
+
+		const keys = Object.keys( sprites );
 
 		const render = i => {
 			if( i == keys.length ) {
@@ -137,7 +146,7 @@ js13k.Renderer = {
 			}
 
 			const key = keys[i];
-			const sprite = js13k.Assets.sprites[key];
+			const sprite = sprites[key];
 
 			const cnv = document.createElement( 'canvas' );
 			cnv.width = sprite.s[0];
@@ -213,8 +222,8 @@ js13k.Renderer = {
 					this.cont.style.top = 0;
 				}
 				else {
-					this.cont.style.left = Math.sin( this.level.timer ) * 3 + 'px';
-					this.cont.style.top = Math.cos( this.level.timer ) * 3 + 'px';
+					this.cont.style.left = Math.sin( this.level.timer ) * this._shakeStr + 'px';
+					this.cont.style.top = Math.cos( this.level.timer ) * this._shakeStr + 'px';
 				}
 			}
 
@@ -303,9 +312,7 @@ js13k.Renderer = {
 		this.cnvUI.height = size;
 		this.cnvUI.width = size;
 
-		this.centerX = Math.round( this.res / 2 );
-		this.centerY = this.centerX;
-
+		this.center = Math.round( this.res / 2 );
 		this.scale = size / this.res;
 
 		if( this.isPaused ) {
@@ -318,9 +325,11 @@ js13k.Renderer = {
 	/**
 	 * Shake the screen.
 	 * @param {number} [duration = 10]
+	 * @param {number} [strength = 3]  - Pixel offset used for shaking. Interval [-strength, strength].
 	 */
-	shake( duration = 10 ) {
+	shake( duration = 10, strength = 3 ) {
 		this._shakeEnd = this.level.timer + duration;
+		this._shakeStr = strength;
 	},
 
 

@@ -18,6 +18,12 @@ class FlyEye extends js13k.LevelObject {
 	constructor( level, x, y, targetX = 0, targetY = 0 ) {
 		super( level, { x, y, w: FlyEye.W, h: FlyEye.H } );
 
+		// Direction of movement.
+		//  0: none
+		//  1: up
+		// -1: down
+		this.dir = 0;
+
 		this.sf = 0; // size factor
 		this.sp = 3;
 		this.targetX = targetX;
@@ -46,11 +52,12 @@ class FlyEye extends js13k.LevelObject {
 		}
 
 		const offsetX = Math.sin( this.level.timer / 20 ) * 4;
+		const offsetY = 2 * this.dir;
 
 		ctx.beginPath();
 		ctx.ellipse( this.x, this.y, r, r, 0, 0, 360 );
-		ctx.moveTo( this.x + offsetX, this.y - 5 );
-		ctx.lineTo( this.x + offsetX, this.y + 5 );
+		ctx.moveTo( this.x + offsetX, this.y - 5 + offsetY );
+		ctx.lineTo( this.x + offsetX, this.y + 5 + offsetY );
 		ctx.stroke();
 
 		ctx.setTransform( js13k.Renderer.scale, 0, 0, js13k.Renderer.scale, 0, 0 );
@@ -78,6 +85,8 @@ class FlyEye extends js13k.LevelObject {
 		const diffX = this.x - this.targetX;
 		const diffY = this.y - this.targetY;
 
+		this.dir = 0;
+
 		if(
 			Math.abs( diffX ) < 1 &&
 			Math.abs( diffY ) < 1
@@ -103,6 +112,7 @@ class FlyEye extends js13k.LevelObject {
 			moveY += dt * this.sp;
 		}
 
+		this.dir = moveY > 0 ? 1 : -1;
 		this.x += moveX;
 		this.y += moveY;
 	}

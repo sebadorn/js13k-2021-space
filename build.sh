@@ -40,6 +40,7 @@ terser \
 	'dangers/FlyEye.js' \
 	'dangers/LaserEye.js' \
 	'dangers/SmallBite.js' \
+	'dangers/TurretEye.js' \
 	'levels/Intro.js' \
 	'levels/Eyes.js' \
 	'levels/Teeth.js' \

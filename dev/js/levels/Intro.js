@@ -36,7 +36,7 @@ class Level_Intro extends js13k.Level {
 	 */
 	draw() {
 		const ctx = js13k.Renderer.ctx;
-		const centerX = js13k.Renderer.centerX;
+		const centerX = js13k.Renderer.center;
 
 		ctx.font = 'bold 36px ' + js13k.FONT;
 		ctx.textAlign = 'center';
@@ -64,8 +64,8 @@ class Level_Intro extends js13k.Level {
 	update( dt ) {
 		this.timer += dt;
 
-		this.player.x = js13k.Renderer.centerX - this.player.w * 0.5;
-		this.player.y = js13k.Renderer.centerY - this.player.h * 0.5;
+		this.player.x = js13k.Renderer.center - this.player.w * 0.5;
+		this.player.y = js13k.Renderer.center - this.player.h * 0.5;
 
 		const Input = js13k.Input;
 

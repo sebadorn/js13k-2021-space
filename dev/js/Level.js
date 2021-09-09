@@ -128,7 +128,7 @@ class Level {
 	drawGameOver( ctx ) {
 		ctx.fillStyle = '#FFF';
 		ctx.textAlign = 'center';
-		ctx.fillText( 'DEVOURED BY FEAR', js13k.Renderer.centerX, js13k.Renderer.centerY );
+		ctx.fillText( 'DEVOURED BY FEAR', js13k.Renderer.center, js13k.Renderer.center );
 
 		this.drawOption( ctx, 0, 'try again', 60 );
 	}
@@ -139,7 +139,7 @@ class Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawHP( ctx ) {
-		const centerX = js13k.Renderer.centerX;
+		const centerX = js13k.Renderer.center;
 		const res = js13k.Renderer.res;
 
 		ctx.fillStyle = 'rgb(255,200,0)';
@@ -162,13 +162,12 @@ class Level {
 	 * @param {number}                   offsetY
 	 */
 	drawOption( ctx, index, text, offsetY ) {
-		const centerX = js13k.Renderer.centerX;
-		const centerY = js13k.Renderer.centerY;
+		const center = js13k.Renderer.center;
 		const width = 180;
 		const height = 40;
 
-		const x = Math.round( centerX - width * 0.5 ) + 0.5;
-		const y = Math.round( centerY + offsetY ) + 0.5;
+		const x = Math.round( center - width * 0.5 ) + 0.5;
+		const y = Math.round( center + offsetY ) + 0.5;
 
 		ctx.fillStyle = 'rgba(0,0,0,0.3)';
 		ctx.fillRect( x, y, width, height );
@@ -181,7 +180,7 @@ class Level {
 		ctx.textAlign = 'center';
 		ctx.textBaseline = 'top';
 		ctx.fillStyle = '#FFF';
-		ctx.fillText( text, centerX, y + 12 );
+		ctx.fillText( text, center, y + 12 );
 	}
 
 

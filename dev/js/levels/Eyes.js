@@ -13,16 +13,18 @@ class Level_Eyes extends js13k.Level {
 	constructor() {
 		super();
 
-		const width = js13k.Renderer.res;
-		const height = js13k.Renderer.res;
-		const center = js13k.Renderer.centerX;
+		this._won = false;
+
+		const res = js13k.Renderer.res;
+		const center = js13k.Renderer.center;
 
 		this.player = new js13k.Player( this );
-		this.player.x = ( width - this.player.w ) * 0.5;
-		this.player.y = ( height - this.player.h ) * 0.5;
+		this.player.x = ( res - this.player.w ) * 0.5;
+		this.player.y = ( res - this.player.h ) * 0.5;
 
 		const FlyEye = js13k.LevelObject.FlyEye;
 		const LaserEye = js13k.LevelObject.LaserEye;
+		const TurretEye = js13k.LevelObject.TurretEye;
 
 
 		// Phase 1
@@ -31,9 +33,9 @@ class Level_Eyes extends js13k.Level {
 
 		for( let i = 0; i < 15; i++ ) {
 			const isEven = i % 2;
-			const x = isEven ? -LaserEye.H : width;
+			const x = isEven ? -LaserEye.H : res;
 			const y = Math.round( i * LaserEye.W );
-			const tx = isEven ? 0 : width;
+			const tx = isEven ? 0 : res;
 
 			const d = new LaserEye( this, x, y, tx, y + Math.round( LaserEye.H * 0.5 ) );
 			d.angle = isEven ? Math.PI * 0.5 : Math.PI * 1.5;
@@ -53,11 +55,11 @@ class Level_Eyes extends js13k.Level {
 		d2.angle = Math.PI;
 
 		// From the right
-		const d3 = new LaserEye( this, width, center - LaserEye.H * 0.5, center - 30, center );
+		const d3 = new LaserEye( this, res, center - LaserEye.H * 0.5, center - 30, center );
 		d3.angle = Math.PI * 1.5;
 
 		// From the bottom
-		const d4 = new LaserEye( this, center - LaserEye.W * 0.5, height, center, center - 30 );
+		const d4 = new LaserEye( this, center - LaserEye.W * 0.5, res, center, center - 30 );
 
 		this.phase2 = [d1, d2, d3, d4];
 		this.phase2.forEach( d => {
@@ -65,17 +67,20 @@ class Level_Eyes extends js13k.Level {
 			d.attackStart = 1;
 		} );
 		this.phase2.push(
-			new FlyEye( this, center - 240, -32, center - 240, height + 32 ),
-			new FlyEye( this, center - 100, -300, center - 100, height + 32 ),
-			new FlyEye( this, center + 160, -100, center + 160, height + 32 ),
-			new FlyEye( this, center + 240, -400, center + 240, height + 32 )
+			new FlyEye( this, center - 240, -32, center - 240, res + 32 ),
+			new FlyEye( this, center - 100, -300, center - 100, res + 32 ),
+			new FlyEye( this, center + 160, -100, center + 160, res + 32 ),
+			new FlyEye( this, center + 240, -400, center + 240, res + 32 )
 		);
 
 
 		// Phase 3
 
 		this.phase3 = [
-			// TODO:
+			new TurretEye( this, center - 180, center - 180 ),
+			new TurretEye( this, center + 180, center - 180 ),
+			new TurretEye( this, center + 180, center + 180 ),
+			new TurretEye( this, center - 180, center + 180 )
 		];
 
 
@@ -109,7 +114,7 @@ class Level_Eyes extends js13k.Level {
 			return;
 		}
 
-		const center = js13k.Renderer.centerX;
+		const center = js13k.Renderer.center;
 		const ctx = js13k.Renderer.ctx;
 		ctx.font = 'bold 20px ' + js13k.FONT;
 		ctx.fillStyle = '#FFF';
@@ -129,11 +134,6 @@ class Level_Eyes extends js13k.Level {
 			ctx.fillText( 'Text ID 5', center, center - 100 );
 			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
 		}
-		// TODO: text
-		else if( this.phase === 7 ) {
-			ctx.fillText( 'Text ID 7', center, center - 100 );
-			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
-		}
 	}
 
 
@@ -142,7 +142,27 @@ class Level_Eyes extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawBackground( ctx ) {
-		const center = js13k.Renderer.centerX;
+		const sprites = js13k.Renderer.sprites;
+		let imgBall = sprites.bg_eye_ball;
+		let imgIris = sprites.bg_eye_iris;
+
+		// Move to foreground in final phase
+		// where contact can cause damage.
+		if( this.phase === 6 && !this._won ) {
+			ctx = js13k.Renderer.ctxDanger;
+			ctx.globalAlpha = this._alpha;
+		}
+		// Indicate the boss eye can be damaged.
+		else if( this.phase === 6 && this._won ) {
+			ctx.globalAlpha = 1;
+			imgBall = sprites.turret_ball;
+			imgIris = sprites.turret_iris;
+		}
+		else {
+			ctx.globalAlpha = 0.1;
+		}
+
+		const center = js13k.Renderer.center;
 		const s = js13k.Renderer.scale;
 
 		let x = center - 90;
@@ -150,7 +170,7 @@ class Level_Eyes extends js13k.Level {
 
 		// scale (global res) x +translate x scale x -translate
 		ctx.setTransform( 2 * s, 0, 0, 2 * s, -x * s, -y * s );
-		ctx.drawImage( js13k.Renderer.sprites.bg_eye_ball, x, y - 10 );
+		ctx.drawImage( imgBall, x, y );
 
 		// Have the eye look in the direction of the player.
 		const playerCenter = this.player.getCenter();
@@ -160,13 +180,14 @@ class Level_Eyes extends js13k.Level {
 			center - playerCenter.y
 		]);
 
-		x = center - 15 + Math.sin( -diff[0] ) * 14;
-		y = center - 60 + Math.sin( -diff[1] ) * 14;
+		x = center - 15 + Math.sin( -diff[0] ) * 24;
+		y = center - 50 + Math.sin( -diff[1] ) * 14;
 
 		ctx.setTransform( 2 * s, 0, 0, 2 * s, -x * s, -y * s );
-		ctx.drawImage( js13k.Renderer.sprites.bg_eye_iris, x, y );
+		ctx.drawImage( imgIris, x, y );
 
 		ctx.setTransform( s, 0, 0, s, 0, 0 );
+		ctx.globalAlpha = 1;
 	}
 
 
@@ -235,8 +256,10 @@ class Level_Eyes extends js13k.Level {
 		// Intro.
 		if( !this.phase ) {
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-				// this.phase = 1;
-				this.phase = 3; // TODO: remove
+				this.phase = 1;
+				// TODO: remove
+				// this.phase = 5;
+				// this._won = false;
 			}
 		}
 		// Next main phase.
@@ -275,7 +298,7 @@ class Level_Eyes extends js13k.Level {
 		// Eyes have reached the center. Start rotating.
 		else if( this.phase === 4 && this.timer > this._end - 700 && this.timer <= this._end ) {
 			const LaserEye = js13k.LevelObject.LaserEye;
-			const center = js13k.Renderer.centerX;
+			const center = js13k.Renderer.center;
 			const adjust = [
 				[-LaserEye.W * 0.5, -LaserEye.W * 0.5],
 				[0, -LaserEye.H * 0.5],
@@ -323,14 +346,105 @@ class Level_Eyes extends js13k.Level {
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
 				this.dangers = this.phase3;
 				this.phase = 6;
-				this._end = this.timer + 200;
+				this.player.canAttack = true;
+
+				this._alpha = 0.1;
+				this._start = this.timer;
+				this._start2 = this.timer;
+
+				js13k.Renderer.shake( 200, 1 );
+			}
+		}
+		// Updates for the phase.
+		else if( this.phase === 6 && !this._won ) {
+			if( this.timer - this._start < 200 ) {
+				this._alpha = Math.max( Math.min( ( this.timer - this._start ) / 200, 1 ), 0.1 );
+			}
+			else {
+				this.dangers[0].show = true;
+
+				if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+					this.player.attack();
+				}
+
+				// Check if player hits a target.
+				if( this.player.isAttacking() ) {
+					const playerCircle = this.player.getCenter();
+					playerCircle.r = this.player.r * 0.9;
+
+					for( let i = 0; i < this.dangers.length; i++ ) {
+						const danger = this.dangers[i];
+						const dangerCenter = danger.getCenter();
+						dangerCenter.r = danger.w * 0.5;
+
+						if(
+							danger.show &&
+							!danger.ended &&
+							danger.isVulnerable() &&
+							js13k.circleOverlap( playerCircle, dangerCenter )
+						) {
+							danger.ended = this.timer;
+							this._start2 = this.timer;
+
+							// All targets destroyed.
+							if( i === this.dangers.length - 1 ) {
+								this._won = true;
+							}
+							// Show next target.
+							else {
+								this.dangers[i + 1].show = true;
+							}
+
+							break;
+						}
+					}
+				}
+
+				const hb = this.player.getHitbox();
+				const target = {
+					x: hb[0],
+					y: hb[1],
+					w: hb[2],
+					h: hb[3]
+				};
+
+				// Wait with the first attack.
+				if( this.timer - this._start2 > 300 ) {
+					this.dangers.forEach( danger => {
+						danger.attack( target );
+					} );
+				}
 			}
 		}
 		// Outro.
-		else if( this.phase === 6 && this.timer > this._end ) {
+		else if( this.phase === 6 && this._won ) {
 			this.dangers = [];
-			this.phase = 7;
+			this.player.canAttack = true;
+
+			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+				// Really hacky way to do a longer fullscreen attack radius.
+				this.player.attDur = 800;
+				this.player.rFull = js13k.Renderer.res;
+				this.player.attack();
+				this.player.onCooldown = () => { return true; };
+
+				this.phase = 7;
+				this._end = this.timer + 200;
+			}
 		}
+		// Continue to next level.
+		else if( this.phase === 7 && this._end < this.timer ) {
+			js13k.Renderer.level = new js13k.Level.Teeth();
+		}
+		// // Continue to next level.
+		// else if( this.phase === 7 ) {
+		// 	if(
+		// 		js13k.Renderer.level === this &&
+		// 		js13k.Input.isPressed( js13k.Input.ACTION.DO, true )
+		// 	) {
+		// 		js13k.Renderer.level = new js13k.Level.Teeth();
+		// 	}
+		// }
 
 		// Border update.
 		switch( this.phase ) {
@@ -340,9 +454,15 @@ class Level_Eyes extends js13k.Level {
 				break;
 
 			case 4:
+			case 6:
 				this.border += dt * 0.2;
 				this.border = Math.min( this.border, 200 );
 				break;
+
+			// case 7:
+			// 	this.border -= dt * 0.4;
+			// 	this.border = Math.max( this.border, 0 );
+			// 	break;
 		}
 	}
 
