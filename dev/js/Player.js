@@ -148,7 +148,7 @@ class Player extends js13k.LevelObject {
 	 * @return {boolean}
 	 */
 	onCooldown() {
-		return this.level.timer - this._attStart <= 40;
+		return this.level.timer - this._attStart <= 20;
 	}
 
 

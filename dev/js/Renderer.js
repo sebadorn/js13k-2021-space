@@ -126,15 +126,28 @@ js13k.Renderer = {
 	 */
 	loadSprites( cb ) {
 		const sprites = js13k.Assets.sprites;
-		sprites.turret_ball = {
+
+		sprites.vuln_ball = {
 			data: sprites.bg_eye_ball.data,
 			c: { a: [223, 68, 13, 255] },
 			s: sprites.bg_eye_ball.s
 		};
-		sprites.turret_iris = {
+		sprites.vuln_iris = {
 			data: sprites.bg_eye_iris.data,
 			c: { a: [223, 68, 13, 255] },
 			s: sprites.bg_eye_iris.s
+		};
+
+		sprites.w_tooth = {
+			data: sprites.br_tooth.data,
+			c: { a: [255, 255, 255, 255] },
+			s: sprites.br_tooth.s
+		};
+
+		sprites.vuln_bite_small = {
+			data: sprites.bite_small.data,
+			c: { a: [223, 68, 13, 255] },
+			s: sprites.bite_small.s
 		};
 
 		const keys = Object.keys( sprites );

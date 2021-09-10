@@ -54,8 +54,8 @@ class TurretEye extends js13k.LevelObject {
 		let y = this.y;
 
 		const sprites = js13k.Renderer.sprites;
-		const imgBall = this.isVulnerable() ? sprites.turret_ball : sprites.bg_eye_ball;
-		const imgIris = this.isVulnerable() ? sprites.turret_iris : sprites.bg_eye_iris;
+		const imgBall = this.isVulnerable() ? sprites.vuln_ball : sprites.bg_eye_ball;
+		const imgIris = this.isVulnerable() ? sprites.vuln_iris : sprites.bg_eye_iris;
 
 		ctx.drawImage( imgBall, x, y );
 

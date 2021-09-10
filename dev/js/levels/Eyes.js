@@ -155,8 +155,8 @@ class Level_Eyes extends js13k.Level {
 		// Indicate the boss eye can be damaged.
 		else if( this.phase === 6 && this._won ) {
 			ctx.globalAlpha = 1;
-			imgBall = sprites.turret_ball;
-			imgIris = sprites.turret_iris;
+			imgBall = sprites.vuln_ball;
+			imgIris = sprites.vuln_iris;
 		}
 		else {
 			ctx.globalAlpha = 0.1;
@@ -436,15 +436,6 @@ class Level_Eyes extends js13k.Level {
 		else if( this.phase === 7 && this._end < this.timer ) {
 			js13k.Renderer.level = new js13k.Level.Teeth();
 		}
-		// // Continue to next level.
-		// else if( this.phase === 7 ) {
-		// 	if(
-		// 		js13k.Renderer.level === this &&
-		// 		js13k.Input.isPressed( js13k.Input.ACTION.DO, true )
-		// 	) {
-		// 		js13k.Renderer.level = new js13k.Level.Teeth();
-		// 	}
-		// }
 
 		// Border update.
 		switch( this.phase ) {
@@ -458,11 +449,6 @@ class Level_Eyes extends js13k.Level {
 				this.border += dt * 0.2;
 				this.border = Math.min( this.border, 200 );
 				break;
-
-			// case 7:
-			// 	this.border -= dt * 0.4;
-			// 	this.border = Math.max( this.border, 0 );
-			// 	break;
 		}
 	}
 

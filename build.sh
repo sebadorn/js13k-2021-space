@@ -37,6 +37,7 @@ terser \
 	'LevelObject.js' \
 	'Player.js' \
 	'Renderer.js' \
+	'dangers/FangBoss.js' \
 	'dangers/FlyEye.js' \
 	'dangers/LaserEye.js' \
 	'dangers/SmallBite.js' \

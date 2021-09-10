@@ -143,7 +143,7 @@ class Level {
 		const res = js13k.Renderer.res;
 
 		ctx.fillStyle = 'rgb(255,200,0)';
-		ctx.strokeStyle = '#FFF';
+		ctx.strokeStyle = 'rgb(255,200,0)';
 		ctx.beginPath();
 
 		for( let i = 0; i < 3; i++ ) {
