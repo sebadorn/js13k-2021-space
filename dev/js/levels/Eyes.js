@@ -13,6 +13,7 @@ class Level_Eyes extends js13k.Level {
 	constructor() {
 		super();
 
+		this.progress = 0;
 		this._won = false;
 
 		const res = js13k.Renderer.res;
@@ -188,6 +189,13 @@ class Level_Eyes extends js13k.Level {
 			ctx.fillText( 'Text ID 5', center, center - 100 );
 			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
 		}
+
+		if( !this.phase ) {
+			const res = js13k.Renderer.res;
+
+			ctx.fillStyle = '#3C7793';
+			ctx.fillRect( 0, 0, res, res * ( 1 - Math.min( this.progress * this.progress, 1 ) ) );
+		}
 	}
 
 
@@ -312,11 +320,15 @@ class Level_Eyes extends js13k.Level {
 
 		// Intro.
 		if( !this.phase ) {
-			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-				this.phase = 1;
-				// TODO: remove
-				// this.phase = 5;
-				// this._won = true;
+			this.progress += dt * 0.015;
+
+			if( this.progress > 1 ) {
+				if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+					this.phase = 1;
+					// TODO: remove
+					// this.phase = 5;
+					// this._won = true;
+				}
 			}
 		}
 		// Next main phase.

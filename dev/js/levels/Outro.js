@@ -47,7 +47,7 @@ class Level_Outro extends js13k.Level {
 		const ctx = js13k.Renderer.ctx;
 
 		ctx.font = 'bold 20px ' + js13k.FONT;
-		ctx.fillStyle = '#FFF';
+		ctx.fillStyle = '#DDD';
 		ctx.textAlign = 'center';
 
 		ctx.fillText( 'WELL, YOU WON TODAY.', center, center - 180 );
