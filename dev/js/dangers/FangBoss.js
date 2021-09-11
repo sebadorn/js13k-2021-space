@@ -14,7 +14,7 @@ class FangBoss extends js13k.LevelObject {
 	constructor( level ) {
 		super( level, { w: 300, h: 80 } );
 
-		this.progress = 0;
+		this.progress = -7;
 	}
 
 
@@ -28,11 +28,17 @@ class FangBoss extends js13k.LevelObject {
 		}
 
 		const segment = this.h * 6;
-		const offsetY = Math.round( this.progress * this.h ) % segment;
+
+		const offsetX = ( Math.sin( this.level.timer / 20 ) + 1 ) * 10;
+		let offsetY = Math.round( this.progress * this.h );
+
+		if( this.progress > 0 ) {
+			offsetY = offsetY % segment;
+		}
 
 
 		// Left side.
-		let x = this.x;
+		let x = this.x - offsetX;
 		let y = this.y - segment + offsetY - this.h;
 
 		ctx.drawImage( js13k.Renderer.sprites.w_tooth, x, y += segment, this.w, this.h );
@@ -40,7 +46,7 @@ class FangBoss extends js13k.LevelObject {
 
 
 		// Right side.
-		x = js13k.Renderer.res - 20 - this.level.border;
+		x = js13k.Renderer.res - 20 - this.level.border + offsetX;
 		y = this.y - segment + offsetY - this.h;
 
 		ctx.translate( x, y );

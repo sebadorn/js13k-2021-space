@@ -8,6 +8,7 @@ js13k.Audio = {
 
 
 	_cache: {},
+	_muteVol: 0.2,
 
 	// No need to set these attributes right now.
 	// Leaving them as comment to know they (will) exist.
@@ -151,6 +152,17 @@ js13k.Audio = {
 
 
 	/**
+	 * Mute.
+	 */
+	mute() {
+		if( this.gain.gain.value !== 0 ) {
+			this._muteVol = this.gain.gain.value;
+			this.gain.gain.value = 0;
+		}
+	},
+
+
+	/**
 	 *
 	 * @param  {function} audioFunction
 	 * @param  {?number}  duration
@@ -184,6 +196,14 @@ js13k.Audio = {
 		osc.stop( this.ctx.currentTime + duration );
 
 		return osc;
+	},
+
+
+	/**
+	 * Unmute.
+	 */
+	unmute() {
+		this.gain.gain.value = this._muteVol;
 	},
 
 

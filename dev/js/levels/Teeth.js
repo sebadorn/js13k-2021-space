@@ -10,14 +10,18 @@ class Level_Teeth extends js13k.Level {
 	 *
 	 * @constructor
 	 */
-	constructor() {
+	constructor( playerHP ) {
 		super();
+
+		this._start = 0;
+		this._end = Infinity;
 
 		this.bossHits = 0;
 
 		const res = js13k.Renderer.res;
 
 		this.player = new js13k.Player( this );
+		this.player.hp = playerHP || this.player.hp;
 		this.player.x = ( res - this.player.w ) * 0.5;
 		this.player.y = ( res - this.player.h ) * 0.5;
 
@@ -32,12 +36,12 @@ class Level_Teeth extends js13k.Level {
 
 
 		// Border image decorations.
-		const [canvas, ctx] = js13k.Renderer.getOffscreenCanvas( 90, js13k.Renderer.res + 114 );
+		const [canvas, ctx] = js13k.Renderer.getOffscreenCanvas( 90, res + 114 );
 		this._cnvBorder = canvas;
 
 		let y = 0;
 
-		while( y < js13k.Renderer.res ) {
+		while( y < res ) {
 			ctx.drawImage( js13k.Renderer.sprites.br_tooth, 0, y, 60, 32 );
 			y += 38;
 			ctx.drawImage( js13k.Renderer.sprites.br_tooth, 0, y, 30, 16 );
@@ -76,7 +80,7 @@ class Level_Teeth extends js13k.Level {
 			ctx.fillText( 'Avoid all attacks.', center, center - 100 );
 			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
 		}
-		else if( this.phase === 1 && this._start + 1000 <= this.timer ) {
+		else if( this.phase === 2 && this._end <= this.timer ) {
 			ctx.fillText( 'Avoid all attacks.', center, center - 100 );
 			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
 		}
@@ -149,12 +153,19 @@ class Level_Teeth extends js13k.Level {
 		if( !this.phase ) {
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
 				this.phase = 1;
+				this.phase = 2; // TODO: remove
+				this._end = -1; // TODO: remove
 				this.dangers = this.phase1;
 				this._start = this.timer;
 			}
 		}
+		// Wait.
+		else if( this.phase === 1 && this._start + 100 < this.timer ) {
+			this.phase = 2;
+			this._end = this.timer + 1000;
+		}
 		// Next main phase.
-		else if( this.phase === 1 && this._start + 1000 > this.timer ) {
+		else if( this.phase === 2 && this._end > this.timer ) {
 			if( this.dangers[0].canAttack() ) {
 				const pc = this.player.getCenter();
 				const dirs = js13k.shuffle( [0, 1, 2, 3] );
@@ -163,9 +174,9 @@ class Level_Teeth extends js13k.Level {
 			}
 		}
 		// Confirm to start next phase.
-		else if( this.phase === 1 ) {
+		else if( this.phase === 2 ) {
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-				this.phase = 2;
+				this.phase = 3;
 				this._start = this.timer;
 
 				this.player.canAttack = true;
@@ -177,7 +188,7 @@ class Level_Teeth extends js13k.Level {
 			}
 		}
 		// Next main phase / boss fight.
-		else if( this.phase === 2 ) {
+		else if( this.phase === 3 ) {
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
 				this.player.attack();
 			}
@@ -198,18 +209,19 @@ class Level_Teeth extends js13k.Level {
 					danger.wasHit = true;
 					this.bossHits++;
 
-					js13k.Renderer.shake( 10, 1 );
+					js13k.Renderer.shake( 10, 2 );
 
 					if( this.bossHits >= 3 ) {
-						this.phase = 3;
+						this.phase = 4;
 						this._end = this.timer + 300;
 					}
 				}
 			}
 
 			if(
-				this.phase === 2 &&
-				this.dangers[0].canAttack()
+				this.phase === 3 &&
+				this.dangers[0].canAttack() &&
+				this._start + 140 < this.timer // Wait a bit with first attack.
 			) {
 				this.dangers[0].wasHit = false;
 
@@ -218,37 +230,33 @@ class Level_Teeth extends js13k.Level {
 			}
 		}
 		// Outro.
-		else if( this.phase === 3 && this._end > this.timer ) {
+		else if( this.phase === 4 && this._end > this.timer ) {
 			this.dangers = [];
 
 			// Really hacky way to do a longer fullscreen attack radius.
+			this.player.vuln = false;
 			this.player.attDur = 800;
 			this.player.rFull = js13k.Renderer.res;
 			this.player.attack();
 			this.player.onCooldown = () => true;
 		}
 		// Next.
-		else if( this.phase === 3 ) {
-			this.player.canAttack = false;
-			this.player.onCooldown = () => false;
-			this.phase = 4;
+		else if( this.phase === 4 ) {
+			js13k.Renderer.level = new js13k.Level.Outro( this.border );
 		}
 
 		// Border update.
 		switch( this.phase ) {
 			case 1:
+			case 2:
 				this.border += dt * 0.15;
 				this.border = Math.min( this.border, 120 );
 				break;
 
-			case 2:
+			case 3:
+			case 4:
 				this.border += dt * 0.2;
 				this.border = Math.max( Math.min( this.border, 220 ), 120 );
-				break;
-
-			case 4:
-				this.border -= dt * 0.3;
-				this.border = Math.max( this.border, 0 );
 				break;
 		}
 	}

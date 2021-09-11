@@ -13,6 +13,6 @@ _[tbd]_
 
 ## Controls
 
-* WASD or arrow keys for movement
+* WASD or ZQSD or arrow keys for movement
 * Space or Enter for various actions
 * Escape to pause/unpause

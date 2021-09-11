@@ -132,6 +132,11 @@ js13k.Renderer = {
 			c: { a: [223, 68, 13, 255] },
 			s: sprites.bg_eye_ball.s
 		};
+		sprites.vuln_blood = {
+			data: sprites.bg_eye_blood.data,
+			c: { a: [223, 68, 13, 255] },
+			s: sprites.bg_eye_blood.s
+		};
 		sprites.vuln_iris = {
 			data: sprites.bg_eye_iris.data,
 			c: { a: [223, 68, 13, 255] },
@@ -241,7 +246,7 @@ js13k.Renderer = {
 			}
 
 			this.level.update( dt );
-			this.draw( dt );
+			this.draw();
 
 			// Draw FPS info
 			if( js13k.DEBUG ) {
@@ -267,6 +272,7 @@ js13k.Renderer = {
 	 */
 	pause() {
 		this.isPaused = true;
+		js13k.Audio.mute();
 	},
 
 
@@ -365,6 +371,7 @@ js13k.Renderer = {
 	unpause() {
 		if( this.isPaused ) {
 			this.isPaused = false;
+			js13k.Audio.unmute();
 			this.mainLoop();
 		}
 	}

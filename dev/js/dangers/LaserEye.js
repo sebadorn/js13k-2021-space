@@ -49,10 +49,6 @@ class LaserEye extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
-		if( this.attackEnd && ( this._start > this.level.timer || this.ended ) ) {
-			return;
-		}
-
 		const frame = this.level.timer % 20 < 10 ? 0 : 1;
 		const center = this.getCenter( true );
 
@@ -64,7 +60,7 @@ class LaserEye extends js13k.LevelObject {
 		ctx.drawImage( LaserEye.sprite[frame], Math.round( this.x ), Math.round( this.y ) );
 
 		// Laser attack.
-		if( this.attackStarted ) {
+		if( this.attackStarted && !this.ended ) {
 			const progress = Math.min( ( this.level.timer - this._start ) / 100, 1 );
 			const alpha = progress * progress;
 			const x = this.x + this.w * 0.5;
@@ -90,6 +86,39 @@ class LaserEye extends js13k.LevelObject {
 
 	/**
 	 *
+	 * @param  {number} dt
+	 * @param  {number} tX
+	 * @param  {number} tY
+	 * @return {number[]}
+	 */
+	getMoveToTarget( dt, tX, tY ) {
+		const center = this.getCenter();
+		const diffX = center.x - tX;
+		const diffY = center.y - tY;
+
+		let moveX = 0;
+		let moveY = 0;
+
+		if( diffX > 0 ) {
+			moveX -= dt * this.sp;
+		}
+		else if( diffX < 0 ) {
+			moveX += dt * this.sp;
+		}
+
+		if( diffY > 0 ) {
+			moveY -= dt * this.sp;
+		}
+		else if( diffY < 0 ) {
+			moveY += dt * this.sp;
+		}
+
+		return [moveX, moveY, diffX, diffY];
+	}
+
+
+	/**
+	 *
 	 * @param {number} dt
 	 */
 	update( dt ) {
@@ -98,50 +127,47 @@ class LaserEye extends js13k.LevelObject {
 		}
 
 		if( this.attackEnd === 1 && this.attackStarted ) {
-			this.ended = ( this.level.timer - this._start ) > 180;
+			this.ended = this.level.timer - this._start > 180;
+
+			if( this.ended && this.canMove && this.endTargetX ) {
+				const [moveX, moveY] = this.getMoveToTarget( dt, this.endTargetX, this.endTargetY );
+
+				this.x += moveX;
+				this.y += moveY;
+			}
+
 			return;
 		}
 
 		if( this.attackStart === 0 ) {
-			this.attackStarted = ( this.level.timer - this._start ) > 30;
+			this.attackStarted = this.level.timer - this._start > 30;
 		}
 
 		const center = this.getCenter();
 
 		if( this.canMove ) {
-			// Move to target position.
-			const diffX = center.x - this.targetX;
-			const diffY = center.y - this.targetY;
+			if( !this.attackStarted ) {
+				const [moveX, moveY, diffX, diffY] = this.getMoveToTarget( dt, this.targetX, this.targetY );
 
-			if( this.attackStart === 1 ) {
-				if(
-					Math.abs( diffX ) < 1 &&
-					Math.abs( diffY ) < 1
-				) {
-					this.attackStarted = true;
-					return;
+				if( this.attackStart === 1 ) {
+					if(
+						Math.abs( diffX ) < 2 &&
+						Math.abs( diffY ) < 2
+					) {
+						this.attackStarted = true;
+						return;
+					}
 				}
-			}
 
-			let moveX = 0;
-			let moveY = 0;
+				this.x += moveX;
+				this.y += moveY;
+			}
+			else if( this.endTargetX ) {
+				const [moveX, moveY] = this.getMoveToTarget( dt, this.endTargetX, this.endTargetY );
 
-			if( diffX > 0 ) {
-				moveX -= dt * this.sp;
+				this.x += moveX;
+				this.y += moveY;
 			}
-			else if( diffX < 0 ) {
-				moveX += dt * this.sp;
-			}
-
-			if( diffY > 0 ) {
-				moveY -= dt * this.sp;
-			}
-			else if( diffY < 0 ) {
-				moveY += dt * this.sp;
-			}
-
-			this.x += moveX;
-			this.y += moveY;
 		}
 
 		if( this.angleTarget === 1 ) {

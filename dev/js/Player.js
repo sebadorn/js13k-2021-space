@@ -24,6 +24,7 @@ class Player extends js13k.LevelObject {
 		this.r = 0; // current attack radius
 		this.rFull = 55;
 		this.sp = 6; // movement speed
+		this.vuln = true;
 
 		if( !Player.sprite ) {
 			Player.sprite = [

@@ -55,9 +55,11 @@ class TurretEye extends js13k.LevelObject {
 
 		const sprites = js13k.Renderer.sprites;
 		const imgBall = this.isVulnerable() ? sprites.vuln_ball : sprites.bg_eye_ball;
+		const imgBlood = this.isVulnerable() ? sprites.vuln_blood : sprites.bg_eye_blood;
 		const imgIris = this.isVulnerable() ? sprites.vuln_iris : sprites.bg_eye_iris;
 
 		ctx.drawImage( imgBall, x, y );
+		ctx.drawImage( imgBlood, x, y );
 
 		let targetCenter = null;
 
@@ -84,7 +86,7 @@ class TurretEye extends js13k.LevelObject {
 
 		ctx.globalAlpha = 1;
 
-		if( this._t && this._tEnd - 180 < this.level.timer ) {
+		if( this._t && this._tEnd - 160 < this.level.timer ) {
 			x += 10;
 			y += 25;
 
@@ -92,14 +94,15 @@ class TurretEye extends js13k.LevelObject {
 			ctx.fillStyle = '#FFF';
 			ctx.strokeStyle = '#FFF';
 
-			ctx.beginPath();
-			ctx.moveTo( x, y );
-			ctx.lineTo( targetCenter.x, targetCenter.y );
-			ctx.stroke();
+			const [vec, _length] = js13k.normalize( [
+				targetCenter.x - x,
+				targetCenter.y - y
+			] );
 
 			ctx.beginPath();
-			ctx.ellipse( targetCenter.x, targetCenter.y, 20, 20, 0, 0, 360 );
-			ctx.fill();
+			ctx.moveTo( x, y );
+			ctx.lineTo( x + vec[0] * 1000, y + vec[1] * 1000 );
+			ctx.stroke();
 		}
 	}
 
@@ -109,7 +112,11 @@ class TurretEye extends js13k.LevelObject {
 	 * @return {boolean}
 	 */
 	isVulnerable() {
-		return this._tEnd > 0 && this._tEnd <= this.level.timer && this._tEnd + 460 >= this.level.timer;
+		return (
+			this._tEnd > 0 &&
+			this._tEnd <= this.level.timer &&
+			this._tEnd + 200 >= this.level.timer
+		);
 	}
 
 

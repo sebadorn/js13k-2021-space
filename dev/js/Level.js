@@ -24,6 +24,10 @@ class Level {
 	 * @return {boolean}
 	 */
 	checkHit() {
+		if( !this.player.vuln ) {
+			return false;
+		}
+
 		const hitbox = this.player.getHitbox();
 		const scale = js13k.Renderer.scale;
 
@@ -139,18 +143,15 @@ class Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawHP( ctx ) {
-		const centerX = js13k.Renderer.center;
+		const center = js13k.Renderer.center;
 		const res = js13k.Renderer.res;
 
-		ctx.fillStyle = 'rgb(255,200,0)';
-		ctx.strokeStyle = 'rgb(255,200,0)';
-		ctx.beginPath();
-
 		for( let i = 0; i < 3; i++ ) {
-			ctx.beginPath();
-			ctx.ellipse( centerX - 30 + i * 30, res - 20, 10, 10, 0, 0, 360 );
-			this.player.hp > i ? ctx.fill() : ctx.stroke();
+			ctx.globalAlpha = this.player.hp > i ? 1 : 0.3;
+			ctx.drawImage( js13k.Player.sprite[0], center - 60 + i * 40, res - 42 );
 		}
+
+		ctx.globalAlpha = 1;
 	}
 
 

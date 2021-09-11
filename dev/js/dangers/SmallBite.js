@@ -53,7 +53,7 @@ class SmallBite extends js13k.LevelObject {
 			this.x = this._t.x - this.w * 0.5;
 			this.y = this._t.y - this.h * 0.5;
 
-			this.progress = -0.6;
+			this.progress = -0.7;
 		}
 	}
 
