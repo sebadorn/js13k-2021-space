@@ -325,9 +325,6 @@ class Level_Eyes extends js13k.Level {
 			if( this.progress > 1 ) {
 				if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
 					this.phase = 1;
-					// TODO: remove
-					// this.phase = 5;
-					// this._won = true;
 				}
 			}
 		}
@@ -386,21 +383,41 @@ class Level_Eyes extends js13k.Level {
 				const angle = ( this.dangers[0].angle + Math.PI * 2 ) % ( Math.PI * 2 );
 				const angleDiff = Math.abs( angle - Math.PI * 0.5 );
 
-				if( angleDiff < 0.01 ) {
+				if( angleDiff < 0.01 && !this.dangers[0].canMove ) {
 					this.dangers.forEach( danger => {
 						danger.ended = true;
 						danger.canMove = true;
 					} );
 
 					const res = js13k.Renderer.res;
+
+					this.dangers[0].x = this.dangers[0].targetX - LaserEye.W * 0.5;
+					this.dangers[0].y = this.dangers[0].targetY - LaserEye.H * 0.5;
+					this.dangers[0].angle = Math.PI * 0.5;
 					this.dangers[0].endTargetX = res + 100;
 					this.dangers[0].endTargetY = center;
+					this.dangers[0].targetY = center;
+
+					this.dangers[1].x = this.dangers[1].targetX - LaserEye.W * 0.5;
+					this.dangers[1].y = this.dangers[1].targetY - LaserEye.H * 0.5;
+					this.dangers[1].angle = Math.PI;
 					this.dangers[1].endTargetX = center;
 					this.dangers[1].endTargetY = res + 100;
+					this.dangers[1].targetX = center;
+
+					this.dangers[2].x = this.dangers[2].targetX - LaserEye.W * 0.5;
+					this.dangers[2].y = this.dangers[2].targetY - LaserEye.H * 0.5;
+					this.dangers[2].angle = Math.PI * 1.5;
 					this.dangers[2].endTargetX = -100;
 					this.dangers[2].endTargetY = center;
+					this.dangers[2].targetY = center;
+
+					this.dangers[3].x = this.dangers[3].targetX - LaserEye.W * 0.5;
+					this.dangers[3].y = this.dangers[3].targetY - LaserEye.H * 0.5;
+					this.dangers[3].angle = 0;
 					this.dangers[3].endTargetX = center;
 					this.dangers[3].endTargetY = -100;
+					this.dangers[3].targetX = center;
 				}
 			}
 

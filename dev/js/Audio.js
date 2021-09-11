@@ -64,48 +64,12 @@ js13k.Audio = {
 
 		// Source: https://xem.github.io/MiniSoundEditor/
 		// Example "rumb2" by Anders Kaare.
-		RUMB2: ( i, data0, data1 ) => {
+		RUMBL2: ( i, data0, data1 ) => {
 			const length = 40000;
 			const done = i > length;
 
 			if( !done ) {
 				let value = Math.sin( i / 2000 - Math.sin( i / 331 ) * Math.sin( i / 61 ) );
-				value *= ( length - i ) / length;
-
-				data0[i] = value;
-				data1[i] = value;
-			}
-
-			return done;
-		},
-
-		// Source: https://xem.github.io/MiniSoundEditor/
-		// Example "rumb3" by Anders Kaare.
-		RUMB3: ( i, data0, data1 ) => {
-			const length = 30000;
-			const done = i > length;
-
-			if( !done ) {
-				let value = Math.sin( i / 2000 - Math.sin( i / 331 ) * Math.sin( i / 61 ) + Math.sin( Math.sin( i / 59 ) / 39 ) * 33 );
-				value *= ( length - i ) / length;
-
-				data0[i] = value;
-				data1[i] = value;
-			}
-
-			return done;
-		},
-
-		// Source: https://xem.github.io/MiniSoundEditor/
-		// Example "what9" by Anders Kaare.
-		WHAT9: ( i, data0, data1 ) => {
-			const length = 20000;
-			const done = i > length;
-
-			if( !done ) {
-				const j = i * 0.04;
-
-				let value = Math.sin( -j * 0.03 * Math.sin( 0.09 * j + Math.sin( j / 200 ) ) + Math.sin( j / 100 ) );
 				value *= ( length - i ) / length;
 
 				data0[i] = value;

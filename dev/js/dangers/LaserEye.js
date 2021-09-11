@@ -132,8 +132,13 @@ class LaserEye extends js13k.LevelObject {
 			if( this.ended && this.canMove && this.endTargetX ) {
 				const [moveX, moveY] = this.getMoveToTarget( dt, this.endTargetX, this.endTargetY );
 
-				this.x += moveX;
-				this.y += moveY;
+				if( this.targetX !== this.endTargetX ) {
+					this.x += moveX;
+				}
+
+				if( this.targetY !== this.endTargetY ) {
+					this.y += moveY;
+				}
 			}
 
 			return;
