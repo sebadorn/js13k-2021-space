@@ -42,7 +42,7 @@ js13k.Input = {
 				gamepad: [9]
 			},
 			[this.ACTION.UP]: {
-				keyboard: ['ArrowUp', 'KeyW', 'KeyZ'], // Z: French layout
+				keyboard: ['ArrowUp', 'KeyW', 'KeyZ', 'KeyY'], // Z: French layout, Y: Also french layout, because Firefox behaves weird
 				gamepad: [12]
 			},
 			[this.ACTION.LEFT]: {
