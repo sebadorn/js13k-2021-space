@@ -17,6 +17,7 @@ class Level_Teeth extends js13k.Level {
 		this._end = Infinity;
 
 		this.bossHits = 0;
+		this.progress = 0;
 
 		const res = js13k.Renderer.res;
 
@@ -70,19 +71,44 @@ class Level_Teeth extends js13k.Level {
 			this.drawHP( js13k.Renderer.ctxUI );
 		}
 
+		const res = js13k.Renderer.res;
 		const center = js13k.Renderer.center;
 		const ctx = js13k.Renderer.ctx;
-		ctx.font = 'bold 20px ' + js13k.FONT;
-		ctx.fillStyle = '#FFF';
+
+		ctx.font = 'bold 18px ' + js13k.FONT;
+		ctx.fillStyle = '#AAA';
 		ctx.textAlign = 'center';
 
 		if( !this.phase ) {
-			ctx.fillText( 'Avoid all attacks.', center, center - 100 );
-			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
+			ctx.globalAlpha = js13k.getTextAlpha( this.timer );
+			ctx.fillText( 'Press [space] to continue', center, center - 60 );
+			ctx.globalAlpha = 1;
+
+			ctx.font = 'bold 36px ' + js13k.FONT;
+			ctx.fillText( 'NOT ENOUGH!', center, center - 138 );
+			ctx.fillText( 'COME ON, LET ME DEVOUR YOU.', center, center - 102 );
+
+			ctx.fillStyle = '#3C7793';
+			ctx.fillText( 'NOT ENOUGH!', center, center - 136 );
+			ctx.fillText( 'COME ON, LET ME DEVOUR YOU.', center, center - 100 );
+
+			js13k.Renderer.ctxUI.fillStyle = '#FFC800';
+			js13k.Renderer.ctxUI.fillRect( 0, res * Math.min( this.progress * this.progress, 1 ), res, res );
 		}
 		else if( this.phase === 2 && this._end <= this.timer ) {
-			ctx.fillText( 'Avoid all attacks.', center, center - 100 );
-			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
+			ctx.fillText( 'It is again time to       .', center, center - 130 );
+			ctx.fillText( 'Wait for the       to become           .', center, center - 100 );
+			ctx.globalAlpha = js13k.getTextAlpha( this.timer );
+			ctx.fillText( 'Press [space] to continue', center, center - 60 );
+			ctx.globalAlpha = 1;
+
+			ctx.fillStyle = '#FFC800';
+			ctx.fillText( '                    attack ', center, center - 130 );
+
+			ctx.fillStyle = '#FFF';
+			ctx.fillText( '             enemy                      ', center, center - 100 );
+			ctx.fillStyle = '#DF440D';
+			ctx.fillText( '                             vulnerable ', center, center - 100 );
 		}
 	}
 
@@ -151,10 +177,13 @@ class Level_Teeth extends js13k.Level {
 
 		// Intro.
 		if( !this.phase ) {
-			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+			this.progress += dt * 0.015;
+
+			if(
+				this.progress > 1 &&
+				js13k.Input.isPressed( js13k.Input.ACTION.DO, true )
+			) {
 				this.phase = 1;
-				this.phase = 2; // TODO: remove
-				this._end = -1; // TODO: remove
 				this.dangers = this.phase1;
 				this._start = this.timer;
 			}
@@ -211,7 +240,7 @@ class Level_Teeth extends js13k.Level {
 
 					js13k.Renderer.shake( 10, 2 );
 
-					if( this.bossHits >= 3 ) {
+					if( this.bossHits >= 4 ) {
 						this.phase = 4;
 						this._end = this.timer + 300;
 					}
@@ -242,7 +271,7 @@ class Level_Teeth extends js13k.Level {
 		}
 		// Next.
 		else if( this.phase === 4 ) {
-			js13k.Renderer.level = new js13k.Level.Outro( this.border );
+			js13k.Renderer.level = new js13k.Level.Outro();
 		}
 
 		// Border update.

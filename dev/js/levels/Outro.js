@@ -9,13 +9,13 @@ class Level_Outro extends js13k.Level {
 	/**
 	 * Outro.
 	 * @constructor
-	 * @param {number} borderWidth
 	 */
-	constructor( borderWidth ) {
+	constructor() {
 		super();
 
-		this.border = borderWidth;
+		this.border = 360;
 		this.progress = 0;
+		this.progressBorder = 0;
 
 
 		// Border image decorations.
@@ -46,14 +46,22 @@ class Level_Outro extends js13k.Level {
 		const res = js13k.Renderer.res;
 		const ctx = js13k.Renderer.ctx;
 
-		ctx.font = 'bold 20px ' + js13k.FONT;
-		ctx.fillStyle = '#DDD';
+		ctx.font = 'bold 28px ' + js13k.FONT;
 		ctx.textAlign = 'center';
 
+		ctx.fillStyle = '#DDD';
 		ctx.fillText( 'WELL, YOU WON TODAY.', center, center - 180 );
-		ctx.fillText( 'GOT THAT HEADSPACE ALL IN ORDER.', center, center - 140 );
+		ctx.fillText( 'THE HEADSPACE IS ALL YOURS.', center, center - 140 );
 		ctx.fillText( 'SLEEP TIGHT THEN...', center, center - 100 );
-		ctx.fillText( 'AND SEE YOU AGAIN.', center, res - 60 );
+
+		ctx.font = 'bold 20px ' + js13k.FONT;
+		ctx.fillStyle = '#AAA';
+		ctx.fillText( 'AND SEE YOU AGAIN.', center, res - 50 );
+
+		if( this.progress <= 1 ) {
+			js13k.Renderer.ctxUI.fillStyle = '#FFC800';
+			js13k.Renderer.ctxUI.fillRect( 0, 0, res, res * ( 1 - Math.min( this.progress * this.progress, 1 ) ) );
+		}
 	}
 
 
@@ -102,7 +110,7 @@ class Level_Outro extends js13k.Level {
 		const s = js13k.Renderer.scale;
 		const border = super.drawBorder( ctx );
 
-		const offsetX = Math.round( border + Math.sin( this.timer / 20 ) * 2 ) - 2.5 - this.progress * 50;
+		const offsetX = Math.round( border + Math.sin( this.timer / 20 ) * 2 ) - 2.5 - this.progressBorder * 50;
 		let x = res - offsetX;
 
 		// Left side.
@@ -154,12 +162,15 @@ class Level_Outro extends js13k.Level {
 	 */
 	update( dt ) {
 		this.timer += dt;
+		this.progress += dt * 0.015;
 
-		this.border -= dt * 0.4;
-		this.border = Math.max( this.border, -22 );
+		if( this.progress >= 1 ) {
+			this.border -= dt * 0.4;
+			this.border = Math.max( this.border, -22 );
 
-		if( this.border === -22 ) {
-			this.progress += dt * 0.02;
+			if( this.border === -22 ) {
+				this.progressBorder += dt * 0.02;
+			}
 		}
 
 		this.isBlinking = ( this.timer + 100 ) % 400 < 5;

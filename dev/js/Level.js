@@ -11,9 +11,9 @@ class Level {
 	 * @constructor
 	 */
 	constructor() {
-		this._selected = 0;
 		this.border = 0;
 		this.dangers = [];
+		this.goProgress = 0;
 		this.isGameOver = false;
 		this.timer = 0;
 	}
@@ -24,7 +24,7 @@ class Level {
 	 * @return {boolean}
 	 */
 	checkHit() {
-		if( !this.player.vuln ) {
+		if( !this.player || !this.player.vuln ) {
 			return false;
 		}
 
@@ -130,11 +130,30 @@ class Level {
 	 * @param {CanvasRenderingContext2D}
 	 */
 	drawGameOver( ctx ) {
-		ctx.fillStyle = '#FFF';
-		ctx.textAlign = 'center';
-		ctx.fillText( 'DEVOURED BY FEAR', js13k.Renderer.center, js13k.Renderer.center );
+		const res = js13k.Renderer.res;
+		const center = js13k.Renderer.center;
 
-		this.drawOption( ctx, 0, 'try again', 60 );
+		ctx.font = 'bold 36px ' + js13k.FONT;
+		ctx.textAlign = 'center';
+
+		ctx.fillStyle = '#DDD';
+		ctx.fillText( 'JUST GIVE UP!', center, center - 138 );
+		ctx.fillText( 'LEAVE IT ALL TO ME.', center, center - 102 );
+
+		ctx.fillStyle = '#3C7793';
+		ctx.fillText( 'JUST GIVE UP!', center, center - 136 );
+		ctx.fillText( 'LEAVE IT ALL TO ME.', center, center - 100 );
+
+		ctx.font = 'bold 18px ' + js13k.FONT;
+		ctx.fillStyle = '#AAA';
+		ctx.globalAlpha = js13k.getTextAlpha( this.timer );
+		ctx.fillText( 'Or press [space] to try again', center, center - 60 );
+		ctx.globalAlpha = 1;
+
+		if( this.goProgress <= 1 ) {
+			ctx.fillStyle = '#3C7793';
+			ctx.fillRect( 0, 0, res, res * ( 1 - Math.min( this.goProgress * this.goProgress, 1 ) ) );
+		}
 	}
 
 
@@ -157,46 +176,16 @@ class Level {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2D} ctx
-	 * @param {number}                   index
-	 * @param {string}                   text
-	 * @param {number}                   offsetY
-	 */
-	drawOption( ctx, index, text, offsetY ) {
-		const center = js13k.Renderer.center;
-		const width = 180;
-		const height = 40;
-
-		const x = Math.round( center - width * 0.5 ) + 0.5;
-		const y = Math.round( center + offsetY ) + 0.5;
-
-		ctx.fillStyle = 'rgba(0,0,0,0.3)';
-		ctx.fillRect( x, y, width, height );
-
-		ctx.strokeStyle = index === this._selected ? 'orange' : '#FFF';
-		ctx.lineWidth = 3;
-		ctx.strokeRect( x, y, width, height );
-
-		ctx.font = 'bold 20px ' + js13k.FONT;
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'top';
-		ctx.fillStyle = '#FFF';
-		ctx.fillText( text, center, y + 12 );
-	}
-
-
-	/**
-	 *
 	 * @param {number} dt
 	 */
 	update( dt ) {
 		this.timer += dt;
 
 		if( this.isGameOver ) {
+			this.goProgress += dt * 0.015;
+
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-				if( this._selected === 0 ) {
-					js13k.Renderer.reloadLevel();
-				}
+				js13k.Renderer.reloadLevel();
 			}
 		}
 		else {
@@ -209,6 +198,7 @@ class Level {
 				if( this.player.hit <= this.timer && this.checkHit() ) {
 					this.player.hp--;
 					js13k.Renderer.shake();
+					js13k.Audio.playFreq( 29.14, 0.4, 'sawtooth' );
 
 					if( this.player.hp > 0 ) {
 						// How long the "has been hit" state stays.

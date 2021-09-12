@@ -57,6 +57,7 @@ class FlyEye extends js13k.LevelObject {
 		const x = Math.round( this.x + offsetX );
 		const y = Math.round( this.y );
 
+		ctx.lineCap = 'round';
 		ctx.lineWidth = 2;
 		ctx.strokeStyle = '#FFF';
 		ctx.beginPath();

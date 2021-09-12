@@ -41,6 +41,7 @@ class Player extends js13k.LevelObject {
 	attack() {
 		if( !this.onCooldown() ) {
 			this._attStart = this.level.timer;
+			js13k.Audio.playFreq( 146.83, 0.1 );
 		}
 	}
 
@@ -75,24 +76,33 @@ class Player extends js13k.LevelObject {
 				ctx.fillStyle = '#FFC800';
 			}
 			else {
-				ctx.fillStyle = '#FFC8003F';
+				ctx.fillStyle = '#FFC800';
 			}
 
 			ctx.lineWidth = 1;
-			ctx.strokeStyle = '#FFC8003F';
+			ctx.strokeStyle = '#FFC800';
 			ctx.beginPath();
 
 			// Show current attack.
 			if( this.onCooldown() ) {
-				this.r = this.rFull * Math.min( 20 * ( this.level.timer - this._attStart ) / this.attDur, 1 );
+				const progress = ( this.level.timer - this._attStart ) / this.attDur;
+				this.r = this.rFull * Math.min( 20 * progress, 1 );
+
+				if( this.rFull !== js13k.Renderer.res ) {
+					ctx.globalAlpha = 1 - Math.min( progress * 5, 1 );
+				}
+
 				ctx.ellipse( centerX, centerY, this.r, this.r, 0, 0, 360 );
 				ctx.fill();
 			}
 			// Show possible attack area.
 			else {
+				ctx.globalAlpha = 0.3;
 				ctx.ellipse( centerX, centerY, this.rFull, this.rFull, 0, 0, 360 );
 				ctx.stroke();
 			}
+
+			ctx.globalAlpha = 1;
 		}
 
 		// Flicker if hit

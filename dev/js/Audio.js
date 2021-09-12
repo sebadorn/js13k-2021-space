@@ -21,62 +21,11 @@ js13k.Audio = {
 	// Functions to create sounds. Pass to play() in order to use.
 	SOUND: {
 
-		// Source: https://xem.github.io/MiniSoundEditor/
-		// Example "glitch1" by Anders Kaare.
-		GLITCH1: ( i, data0, data1 ) => {
-			const length = 50000;
-			const done = i > length;
-
-			if( !done ) {
-				let value = ( Math.pow( i + Math.sin( i * 0.01 ) * 1000, 0.8 ) & 200 ) ? 0.5 : -0.5;
-				value *= ( length - i ) / length;
-
-				data0[i] = value;
-				data1[i] = value;
-			}
-
-			return done;
-		},
-
 		NOISE: ( i, data0, data1 ) => {
 			data0[i] = Math.random() * 2 - 1;
 			data1[i] = Math.random() * 2 - 1;
 
 			return false;
-		},
-
-		// Source: https://xem.github.io/MiniSoundEditor/
-		// Example "rumbl" by Anders Kaare.
-		RUMBL: ( i, data0, data1 ) => {
-			const length = 40000;
-			const done = i > length;
-
-			if( !done ) {
-				let value = Math.sin( i / 1000 - Math.sin( i / 100 ) * Math.sin( i / 61 ) );
-				value *= ( length - i ) / length;
-
-				data0[i] = value;
-				data1[i] = value;
-			}
-
-			return done;
-		},
-
-		// Source: https://xem.github.io/MiniSoundEditor/
-		// Example "rumb2" by Anders Kaare.
-		RUMBL2: ( i, data0, data1 ) => {
-			const length = 40000;
-			const done = i > length;
-
-			if( !done ) {
-				let value = Math.sin( i / 2000 - Math.sin( i / 331 ) * Math.sin( i / 61 ) );
-				value *= ( length - i ) / length;
-
-				data0[i] = value;
-				data1[i] = value;
-			}
-
-			return done;
 		}
 
 	},
@@ -93,7 +42,7 @@ js13k.Audio = {
 
 		// Default volume is too loud. Go with something
 		// really low, it will still be loud enough.
-		this.volume( 0.2 );
+		this.volume( 0.1 );
 
 		// Cache all sounds as AudioBuffers.
 		for( const name in this.SOUND ) {
@@ -128,15 +77,35 @@ js13k.Audio = {
 
 	/**
 	 *
-	 * @param  {function} audioFunction
-	 * @param  {?number}  duration
+	 * @param  {function}  audioFunction
+	 * @param  {?number}   duration
+	 * @param  {?number}  [gain = 1]
+	 * @param  {?string}  [gainDirection = "dec"] - "dec", "inc"
 	 * @return {?AudioBufferSourceNode}
 	 */
-	play( audioFunction, duration ) {
+	play( audioFunction, duration, gain = 1, gainDirection = 'dec' ) {
+		// Gradually become quiter towards the end.
+		//
+		// NOTE: The gainNode value has to be set with setValueAtTime(),
+		// otherwise linearRampToValueAtTime() does not work in Firefox.
+		// @see https://bugzilla.mozilla.org/show_bug.cgi?id=1171438
+
+		const gainNode = this.ctx.createGain();
+		gainNode.connect( this.gain );
+
+		if( gainDirection === 'inc' ) {
+			gainNode.gain.setValueAtTime( 0, this.ctx.currentTime );
+			gainNode.gain.linearRampToValueAtTime( gain, this.ctx.currentTime + duration - 0.01 );
+		}
+		else {
+			gainNode.gain.setValueAtTime( gain, this.ctx.currentTime );
+			gainNode.gain.linearRampToValueAtTime( 0, this.ctx.currentTime + duration - 0.01 );
+		}
+
 		const buffer = this._cache[audioFunction.name];
 		const source = this.ctx.createBufferSource();
 		source.buffer = buffer;
-		source.connect( this.gain );
+		source.connect( gainNode );
 		source.start( 0, 0, duration );
 
 		// In case stop() should be called at some point.
@@ -148,14 +117,33 @@ js13k.Audio = {
 	 *
 	 * @param  {number}   freq
 	 * @param  {number}   duration
-	 * @param  {?string} [type = "sine"] - "sine", "square", "sawtooth", "triangle"
+	 * @param  {?string} [type = "sine"]         - "sine", "square", "sawtooth", "triangle"
+	 * @param  {?string} [gainDirection = "dec"] - "dec", "inc"
 	 * @return {OscillatorNode}
 	 */
-	playFreq( freq, duration, type = 'sine' ) {
+	playFreq( freq, duration, type = 'sine', gainDirection = 'dec' ) {
+		// Gradually become quiter towards the end.
+		//
+		// NOTE: The gainNode value has to be set with setValueAtTime(),
+		// otherwise linearRampToValueAtTime() does not work in Firefox.
+		// @see https://bugzilla.mozilla.org/show_bug.cgi?id=1171438
+
+		const gainNode = this.ctx.createGain();
+		gainNode.connect( this.gain );
+
+		if( gainDirection === 'inc' ) {
+			gainNode.gain.setValueAtTime( 0, this.ctx.currentTime );
+			gainNode.gain.linearRampToValueAtTime( 1, this.ctx.currentTime + duration - 0.01 );
+		}
+		else {
+			gainNode.gain.setValueAtTime( 1, this.ctx.currentTime );
+			gainNode.gain.linearRampToValueAtTime( 0, this.ctx.currentTime + duration - 0.01 );
+		}
+
 		const osc = this.ctx.createOscillator();
 		osc.type = type;
 		osc.frequency.setValueAtTime( freq, this.ctx.currentTime );
-		osc.connect( this.gain );
+		osc.connect( gainNode );
 		osc.start();
 		osc.stop( this.ctx.currentTime + duration );
 

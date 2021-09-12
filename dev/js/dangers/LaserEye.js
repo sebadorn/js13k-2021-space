@@ -68,6 +68,7 @@ class LaserEye extends js13k.LevelObject {
 			ctx.fillStyle = `rgba(255,255,255,${alpha})`;
 			ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
 			ctx.lineWidth = Math.round( progress * progress * 30 );
+			ctx.lineCap = 'round';
 
 			ctx.beginPath();
 			ctx.moveTo( x, this.y );
@@ -78,6 +79,10 @@ class LaserEye extends js13k.LevelObject {
 			ctx.beginPath();
 			ctx.ellipse( x, this.y - js13k.Renderer.res * 0.7, r, r, 0, 0, 360 );
 			ctx.fill();
+
+			if( !this._sound ) {
+				this._sound = js13k.Audio.play( js13k.Audio.SOUND.NOISE, 0.4, 0.3 );
+			}
 		}
 
 		ctx.setTransform( js13k.Renderer.scale, 0, 0, js13k.Renderer.scale, 0, 0 );

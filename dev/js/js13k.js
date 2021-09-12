@@ -8,7 +8,7 @@ const js13k = {
 
 
 	// Config
-	DEBUG: true,
+	DEBUG: false,
 	FONT: '"Courier New", monospace',
 	TARGET_FPS: 60,
 
@@ -29,6 +29,16 @@ const js13k = {
 		const sqRadiusSum = ( c1.r + c2.r ) * ( c1.r + c2.r );
 
 		return sqCenterDistance < sqRadiusSum;
+	},
+
+
+	/**
+	 *
+	 * @param  {number} timer
+	 * @return {number}
+	 */
+	getTextAlpha( timer ) {
+		return 0.1 + ( Math.sin( timer / 40 ) + 1 ) * 0.5 * 0.9;
 	},
 
 

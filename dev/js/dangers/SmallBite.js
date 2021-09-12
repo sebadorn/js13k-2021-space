@@ -47,6 +47,7 @@ class SmallBite extends js13k.LevelObject {
 		if( this.canAttack() ) {
 			this.dir = dir;
 
+			this._sound = null;
 			this._t = target;
 			this._tEnd = this.level.timer + 100;
 
@@ -139,6 +140,10 @@ class SmallBite extends js13k.LevelObject {
 	update( dt ) {
 		if( !this._t ) {
 			return;
+		}
+
+		if( !this._sound && this._tEnd < this.level.timer + 65 ) {
+			this._sound = js13k.Audio.playFreq( 65.41, 0.1 );
 		}
 
 		if( this._tEnd < this.level.timer ) {

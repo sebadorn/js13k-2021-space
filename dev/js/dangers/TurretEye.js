@@ -90,7 +90,8 @@ class TurretEye extends js13k.LevelObject {
 			x += 10;
 			y += 25;
 
-			ctx.lineWidth = 10;
+			ctx.lineCap = 'round';
+			ctx.lineWidth = 20;
 			ctx.fillStyle = '#FFF';
 			ctx.strokeStyle = '#FFF';
 
@@ -103,6 +104,10 @@ class TurretEye extends js13k.LevelObject {
 			ctx.moveTo( x, y );
 			ctx.lineTo( x + vec[0] * 1000, y + vec[1] * 1000 );
 			ctx.stroke();
+
+			if( !this._sound ) {
+				this._sound = js13k.Audio.play( js13k.Audio.SOUND.NOISE, 0.3, 0.5 );
+			}
 		}
 	}
 
@@ -127,6 +132,7 @@ class TurretEye extends js13k.LevelObject {
 	update( dt ) {
 		if( this._tEnd <= this.level.timer ) {
 			this._t = null;
+			this._sound = null;
 		}
 	}
 

@@ -169,30 +169,46 @@ class Level_Eyes extends js13k.Level {
 			return;
 		}
 
+		const res = js13k.Renderer.res;
 		const center = js13k.Renderer.center;
 		const ctx = js13k.Renderer.ctx;
+
 		ctx.font = 'bold 20px ' + js13k.FONT;
-		ctx.fillStyle = '#FFF';
+		ctx.fillStyle = '#AAA';
 		ctx.textAlign = 'center';
 
 		if( !this.phase ) {
-			ctx.fillText( 'Avoid all attacks.', center, center - 100 );
-			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
+			ctx.fillText( 'Do not touch            or        .', center, center - 100 );
+			ctx.globalAlpha = js13k.getTextAlpha( this.timer );
+			ctx.fillText( 'Press [space] to continue', center, center - 60 );
+			ctx.globalAlpha = 1;
+
+			ctx.fillStyle = '#3C7793';
+			ctx.fillText( '             the border            ', center, center - 100 );
+			ctx.fillStyle = '#FFF';
+			ctx.fillText( '                           enemies ', center, center - 100 );
+
+			ctx.fillStyle = '#FFC800';
+			ctx.fillText( 'Your hit points', center, res - 80 );
+			ctx.fillText( 'v', center, res - 60 );
 		}
-		// TODO: text
-		else if( this.phase === 3 ) {
-			ctx.fillText( 'Text ID 3', center, center - 100 );
-			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
-		}
-		// TODO: text
 		else if( this.phase === 5 ) {
-			ctx.fillText( 'Text ID 5', center, center - 100 );
-			ctx.fillText( 'Press [SPACE] to continue.', center, center - 60 );
+			ctx.fillText( 'You now have an       . Use it with        .', center, center - 130 );
+			ctx.fillText( 'Wait for the       to become           .', center, center - 100 );
+			ctx.globalAlpha = js13k.getTextAlpha( this.timer );
+			ctx.fillText( 'Press [space] to continue', center, center - 60 );
+			ctx.globalAlpha = 1;
+
+			ctx.fillStyle = '#FFC800';
+			ctx.fillText( '                attack              [space] ', center, center - 130 );
+
+			ctx.fillStyle = '#FFF';
+			ctx.fillText( '             enemy                      ', center, center - 100 );
+			ctx.fillStyle = '#DF440D';
+			ctx.fillText( '                             vulnerable ', center, center - 100 );
 		}
 
 		if( !this.phase ) {
-			const res = js13k.Renderer.res;
-
 			ctx.fillStyle = '#3C7793';
 			ctx.fillRect( 0, 0, res, res * ( 1 - Math.min( this.progress * this.progress, 1 ) ) );
 		}
@@ -322,10 +338,11 @@ class Level_Eyes extends js13k.Level {
 		if( !this.phase ) {
 			this.progress += dt * 0.015;
 
-			if( this.progress > 1 ) {
-				if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-					this.phase = 1;
-				}
+			if(
+				this.progress > 1 &&
+				js13k.Input.isPressed( js13k.Input.ACTION.DO, true )
+			) {
+				this.phase = 1;
 			}
 		}
 		// Next main phase.
@@ -334,31 +351,28 @@ class Level_Eyes extends js13k.Level {
 			this.dangers.forEach( ( danger, i ) => danger.start( i * 33 ) );
 
 			this.phase = 2;
-			this._end = this.timer + this.dangers.length * 33 + 400;
+			this._end = this.timer + this.dangers.length * 33 + 500;
 		}
-		// Some text to confirm between main phases.
 		else if( this.phase === 2 && this.timer > this._end ) {
 			this.dangers = [];
 			this.phase = 3;
 		}
 		// Next main phase.
 		else if( this.phase === 3 ) {
-			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-				this.dangers = this.phase2;
-				this.dangers.forEach( ( danger, i ) => {
-					// LaserEyes
-					if( i < 4 ) {
-						danger.start();
-					}
-					// FlyEyes
-					else {
-						danger.start( 20 + i * 45 );
-					}
-				} );
+			this.dangers = this.phase2;
+			this.dangers.forEach( ( danger, i ) => {
+				// LaserEyes
+				if( i < 4 ) {
+					danger.start();
+				}
+				// FlyEyes
+				else {
+					danger.start( 20 + i * 45 );
+				}
+			} );
 
-				this.phase = 4;
-				this._end = this.timer + 1800;
-			}
+			this.phase = 4;
+			this._end = this.timer + 1800;
 		}
 		// Eyes have reached the center. Start rotating.
 		else if( this.phase === 4 && this.timer > this._end - 1600 && this.timer <= this._end ) {
@@ -389,6 +403,7 @@ class Level_Eyes extends js13k.Level {
 						danger.canMove = true;
 					} );
 
+					// Make sure the LaserEyes are in a stable position for movement.
 					const res = js13k.Renderer.res;
 
 					this.dangers[0].x = this.dangers[0].targetX - LaserEye.W * 0.5;
@@ -462,22 +477,22 @@ class Level_Eyes extends js13k.Level {
 
 				this._alpha = 0.1;
 				this._start = this.timer;
-				this._start2 = this.timer;
 
 				js13k.Renderer.shake( 200, 1 );
 			}
 		}
 		// Updates for the phase.
 		else if( this.phase === 6 && !this._won ) {
+			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+				this.player.attack();
+			}
+
 			if( this.timer - this._start < 200 ) {
 				this._alpha = Math.max( Math.min( ( this.timer - this._start ) / 200, 1 ), 0.1 );
+				this._start2 = this.timer;
 			}
 			else {
 				this.dangers[0].show = true;
-
-				if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-					this.player.attack();
-				}
 
 				// Check if player hits a target.
 				if( this.player.isAttacking() ) {
@@ -523,7 +538,7 @@ class Level_Eyes extends js13k.Level {
 				};
 
 				// Wait with the first attack.
-				if( this.timer - this._start2 > 300 ) {
+				if( this.timer - this._start2 > 100 ) {
 					this.dangers.forEach( danger => {
 						danger.attack( target );
 					} );
